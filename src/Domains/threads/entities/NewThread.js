@@ -1,4 +1,4 @@
-class NewAuth {
+class NewThread {
   constructor(payload) {
     this._verifyPayload(payload);
 
@@ -18,4 +18,4 @@ class NewAuth {
   }
 }
 
-module.exports = NewAuth;
+module.exports = NewThread;

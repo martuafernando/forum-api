@@ -1,9 +1,10 @@
-class NewAuth {
+class SavedThread {
   constructor(payload) {
     this._verifyPayload(payload);
 
     this.id = payload.id;
     this.title = payload.title;
+    this.body = payload.body;
     this.owner = payload.owner;
   }
 
@@ -18,4 +19,4 @@ class NewAuth {
   }
 }
 
-module.exports = NewAuth;
+module.exports = SavedThread;
