@@ -1,35 +1,33 @@
-const SavedThread = require('../SavedThread');
+const SavedThread = require('../SavedThreadComment');
 
-describe('SavedThread entities', () => {
+describe('SavedThreadComments entities', () => {
   it('should throw error when payload not contain needed property', () => {
     // Arrange
     const payload = {
-      title: 'title',
+      content: 'comment content',
     };
 
     // Action & Assert
-    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should throw error when payload not meet data type specification', () => {
     // Arrange
     const payload = {
-      id: 'threadId',
-      title: 'title',
-      body: 'body',
+      id: 'threadCommentId',
+      content: 'comment content',
       owner: 1234,
     };
 
     // Action & Assert
-    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
-  it('should create SavedThread entities correctly', () => {
+  it('should create SavedThreadComments entities correctly', () => {
     // Arrange
     const payload = {
-      id: 'threadId',
-      title: 'title',
-      body: 'body',
+      id: 'threadCommentId',
+      content: 'comment content',
       owner: 'userId',
     };
 
@@ -39,7 +37,8 @@ describe('SavedThread entities', () => {
     // Assert
     expect(savedThread).toBeInstanceOf(SavedThread);
     expect(savedThread.id).toEqual(payload.id);
-    expect(savedThread.title).toEqual(payload.title);
+    expect(savedThread.content).toEqual(payload.content);
     expect(savedThread.owner).toEqual(payload.owner);
+
   });
 });
