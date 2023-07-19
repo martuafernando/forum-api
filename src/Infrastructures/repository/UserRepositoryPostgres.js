@@ -67,6 +67,16 @@ class UserRepositoryPostgres extends UserRepository {
 
     return id;
   }
+
+  async findOneById(id) {
+    const query = {
+      text: 'SELECT * FROM users WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+    return result.rows?.[0];
+  }
 }
 
 module.exports = UserRepositoryPostgres;

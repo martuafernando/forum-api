@@ -122,4 +122,28 @@ describe('UserRepositoryPostgres', () => {
       expect(userId).toEqual('user-321');
     });
   });
+
+  describe('findOneById', () => {
+    it('should return undefined when user not found', async () => {
+      // Arrange
+      const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(userRepositoryPostgres.findOneById('dicoding'))
+        .resolves
+        .toEqual(undefined);
+    });
+
+    it('should return user correctly', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-321', username: 'dicoding' });
+      const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
+
+      // Action
+      const user = await userRepositoryPostgres.findOneById('user-321');
+
+      // Assert
+      expect(user).toBeDefined();
+    });
+  });
 });
