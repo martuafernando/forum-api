@@ -12,6 +12,7 @@ describe('AddThreadUseCase', () => {
     const useCasePayload = {
       title: 'thread-title',
       body: 'thread-body',
+      date: 'thread-date',
       owner: '1',
     };
 
@@ -19,6 +20,7 @@ describe('AddThreadUseCase', () => {
       id: 'thread-id',
       title: useCasePayload.title,
       body: useCasePayload.body,
+      date: useCasePayload.date,
       owner: useCasePayload.owner,
     });
 
@@ -42,12 +44,14 @@ describe('AddThreadUseCase', () => {
       id: 'thread-id',
       title: useCasePayload.title,
       body: useCasePayload.body,
+      date: useCasePayload.date,
       owner: useCasePayload.owner,
     }));
 
     expect(mockThreadRepository.create).toBeCalledWith(new NewThread({
       title: useCasePayload.title,
       body: useCasePayload.body,
+      date: useCasePayload.date,
       owner: useCasePayload.owner,
     }));
   });

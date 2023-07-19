@@ -17,6 +17,7 @@ describe('SavedThread entities', () => {
       id: 'threadId',
       title: 'title',
       body: 'body',
+      date: 'date',
       owner: 1234,
     };
 
@@ -30,6 +31,7 @@ describe('SavedThread entities', () => {
       id: 'threadId',
       title: 'title',
       body: 'body',
+      date: 'date',
       owner: 'userId',
     };
 
@@ -40,6 +42,7 @@ describe('SavedThread entities', () => {
     expect(savedThread).toBeInstanceOf(SavedThread);
     expect(savedThread.id).toEqual(payload.id);
     expect(savedThread.title).toEqual(payload.title);
+    expect(savedThread.date).toEqual(payload.date);
     expect(savedThread.owner).toEqual(payload.owner);
   });
 });
