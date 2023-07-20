@@ -14,12 +14,22 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
+    date: {
+      type: 'TEXT',
+      notNull: true,
+      default: pgm.func('CURRENT_TIMESTAMP'),
+    },
     owner: {
       type: 'VARCHAR(50)',
       notNull: true,
       references: 'users',
       onDelete: 'CASCADE'
     },
+    is_deleted: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false
+    }
   });
 };
 

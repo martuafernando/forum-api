@@ -16,6 +16,7 @@ describe('SavedComment entities', () => {
     const payload = {
       id: 'comment-id',
       content: 'comment content',
+      date: '2021-08-08T07:19:09.775Z',
       owner: 1234,
     };
 
@@ -28,6 +29,7 @@ describe('SavedComment entities', () => {
     const payload = {
       id: 'comment-id',
       content: 'comment content',
+      date: '2021-08-08T07:19:09.775Z',
       owner: 'user-id',
     };
 

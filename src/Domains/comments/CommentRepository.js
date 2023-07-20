@@ -1,9 +1,9 @@
 class CommentRepository {
-  async create(comment) {
+  async createThreadComment(comment) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async findAll(query) {
+  async findAllFromThread(query) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 

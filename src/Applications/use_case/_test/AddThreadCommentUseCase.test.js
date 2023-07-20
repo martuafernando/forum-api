@@ -1,22 +1,26 @@
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 const SavedComment = require('../../../Domains/comments/entities/SavedComment');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
-const AddCommentUseCase = require('../AddCommentUseCase');
+const AddThreadCommentUseCase = require('../AddThreadCommentUseCase');
 
-describe('AddCommentUseCase', () => {
+describe('AddThreadCommentUseCase', () => {
   /**
    * Menguji apakah use case mampu mengoskestrasikan langkah demi langkah dengan benar.
    */
-  it('should orchestrating the add comment comment action correctly', async () => {
+  it('should orchestrating the add comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'comment content',
+      date: '2021-08-08T07:19:09.775Z',
+      threadId: 'thread-123',
       owner: '1',
     };
 
     const mockSavedComment = new SavedComment({
       id: 'comment-id',
       content: 'comment content',
+      date: '2021-08-08T07:19:09.775Z',
+      threadId: 'thread-123',
       owner: useCasePayload.owner,
     });
 
@@ -24,11 +28,11 @@ describe('AddCommentUseCase', () => {
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockCommentRepository.create = jest.fn()
+    mockCommentRepository.createThreadComment = jest.fn()
       .mockImplementation(() => Promise.resolve(mockSavedComment));
 
     /** creating use case instance */
-    const getCommentUseCase = new AddCommentUseCase({
+    const getCommentUseCase = new AddThreadCommentUseCase({
       commentRepository: mockCommentRepository,
     });
 
@@ -39,12 +43,15 @@ describe('AddCommentUseCase', () => {
     expect(savedComment).toStrictEqual(new SavedComment({
       id: 'comment-id',
       content: useCasePayload.content,
+      date: useCasePayload.date,
+      threadId: 'thread-123',
       owner: useCasePayload.owner,
     }));
 
-    expect(mockCommentRepository.create).toBeCalledWith(new NewComment({
+    expect(mockCommentRepository.createThreadComment).toBeCalledWith(new NewComment({
       id: useCasePayload.id,
       content: useCasePayload.content,
+      threadId: 'thread-123',
       owner: useCasePayload.owner,
     }));
   });
