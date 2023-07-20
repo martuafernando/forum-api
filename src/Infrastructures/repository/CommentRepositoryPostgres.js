@@ -2,6 +2,7 @@ const InvariantError = require('../../Commons/exceptions/InvariantError');
 const NewComment = require('../../Domains/comments/entities/NewComment');
 const SavedComment = require('../../Domains/comments/entities/SavedComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor({
@@ -62,8 +63,10 @@ class CommentRepositoryPostgres extends CommentRepository {
     return result.rows?.[0] ? new SavedComment(result.rows?.[0]) : undefined;
   }
 
-  async remove(commentId) {
-    if (!await this.findOneById(commentId)) throw new InvariantError('Comment tidak ditemukan')
+  async remove(commentId, ownerId) {
+    const comment = await this.findOneById(commentId)
+    if (!comment) throw new InvariantError('Comment tidak ditemukan')
+    if (comment.owner !== ownerId) throw new AuthorizationError('Forbidden')
 
     const query = {
       text: `UPDATE comments

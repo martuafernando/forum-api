@@ -1,6 +1,6 @@
 const NewComment = require('../../Domains/comments/entities/NewComment');
 
-class AddCommentUseCase {
+class AddThreadCommentUseCase {
   constructor({ commentRepository }) {
     this._commentRepository = commentRepository;
   }
@@ -11,4 +11,4 @@ class AddCommentUseCase {
   }
 }
 
-module.exports = AddCommentUseCase;
+module.exports = AddThreadCommentUseCase;

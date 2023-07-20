@@ -5,6 +5,7 @@ const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres')
 const NewThread = require('../../../Domains/threads/entities/NewThread')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const InvariantError = require('../../../Commons/exceptions/InvariantError')
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper')
 
 describe('ThreadRepositoryPostgres', () => {
@@ -140,9 +141,24 @@ describe('ThreadRepositoryPostgres', () => {
       });
 
       // Action & Assert
-      expect(threadRepositoryPostgres.remove('thread-1'))
+      expect(threadRepositoryPostgres.remove('thread-1', 'user-123'))
         .rejects
         .toThrowError(InvariantError)
+    })
+
+    it('should throw AuthorizationError when user is not the owner', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres({
+        pool,
+        userRepository: UsersTableTestHelper,
+        commentRepository: CommentsTableTestHelper
+      });
+      await ThreadsTableTestHelper.create({ id: 'thread-1', owner: 'user-123' })
+
+      // Action & Assert
+      expect(threadRepositoryPostgres.remove('thread-1', 'user-xxx'))
+        .rejects
+        .toThrowError(AuthorizationError)
     })
   })
 
@@ -153,13 +169,13 @@ describe('ThreadRepositoryPostgres', () => {
         userRepository: UsersTableTestHelper,
         commentRepository: CommentsTableTestHelper
       });
-    await ThreadsTableTestHelper.create({ id: 'thread-1', owner: 'user-123' })
+    await ThreadsTableTestHelper.create({ id: 'thread-123', owner: 'user-123' })
 
     // Action
-    await threadRepositoryPostgres.remove('thread-1')
+    await threadRepositoryPostgres.remove('thread-123', 'user-123')
 
     // Assert
-    const thread = await ThreadsTableTestHelper.findOneById('thread-1')
+    const thread = await ThreadsTableTestHelper.findOneById('thread-123')
     expect(thread).toBeUndefined()
   })
 })

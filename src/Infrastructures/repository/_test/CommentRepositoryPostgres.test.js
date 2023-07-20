@@ -6,7 +6,7 @@ const CommentRepositoryPostgres = require('../CommentRepositoryPostgres')
 const NewComment = require('../../../Domains/comments/entities/NewComment')
 const SavedComment = require('../../../Domains/comments/entities/SavedComment')
 const InvariantError = require('../../../Commons/exceptions/InvariantError')
-
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 describe('CommentRepositoryPostgres', () => {
   beforeAll(async () => {
     await UsersTableTestHelper.addUser({ id: 'user-123' })
@@ -121,22 +121,37 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
 
       // Action & Assert
-      expect(commentRepositoryPostgres.remove('comment-1'))
+      expect(commentRepositoryPostgres.remove('comment-1', 'user-123'))
         .rejects
         .toThrowError(InvariantError)
     })
   })
 
+  it('should throw AuthorizationError when user is not the owner', async () => {
+    // Arrange
+    const commentRepositoryPostgres = new CommentRepositoryPostgres({
+      pool,
+      userRepository: UsersTableTestHelper,
+      threadRepository: ThreadsTableTestHelper
+    });
+    await CommentsTableTestHelper.createThreadComment({ id: 'comment-1', owner: 'user-123' })
+
+    // Action & Assert
+    expect(commentRepositoryPostgres.remove('comment-1', 'user-xxx'))
+      .rejects
+      .toThrowError(AuthorizationError)
+  })
+
   it('should delete comment from database', async () => {
     // Arrange
     const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
-    await CommentsTableTestHelper.createThreadComment({ id: 'comment-1', owner: 'user-123' })
+    await CommentsTableTestHelper.createThreadComment({ id: 'comment-123', owner: 'user-123' })
 
     // Action
-    await commentRepositoryPostgres.remove('comment-1')
+    await commentRepositoryPostgres.remove('comment-123', 'user-123')
 
     // Assert
-    const comment = await CommentsTableTestHelper.findOneById('comment-1')
+    const comment = await CommentsTableTestHelper.findOneById('comment-123')
     expect(comment).toBeUndefined()
   })
 })
