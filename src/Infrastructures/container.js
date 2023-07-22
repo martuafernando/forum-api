@@ -66,20 +66,19 @@ container.register([
     key: ThreadRepository.name,
     Class: ThreadRepositoryPostgres,
     parameter: {
+      injectType: 'destructuring',
       dependencies: [
         {
+          name: 'pool',
           concrete: pool,
         },
         {
+          name: 'idGenerator',
           concrete: nanoid,
         },
         {
           name: 'userRepository',
           internal: UserRepository.name,
-        },
-        {
-          name: 'commentRepository',
-          internal: CommentRepository.name,
         },
       ],
     },
@@ -88,11 +87,14 @@ container.register([
     key: CommentRepository.name,
     Class: CommentRepositoryPostgres,
     parameter: {
+      injectType: 'destructuring',
       dependencies: [
         {
+          name: 'pool',
           concrete: pool,
         },
         {
+          name: 'idGenerator',
           concrete: nanoid,
         },
         {
@@ -213,6 +215,10 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
+        },
+        {
+          name: 'authenticationTokenManager',
+          internal: AuthenticationTokenManager.name,
         },
       ],
     },

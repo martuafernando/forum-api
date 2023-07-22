@@ -6,7 +6,6 @@ const NewThread = require('../../../Domains/threads/entities/NewThread')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper')
 
 describe('ThreadRepositoryPostgres', () => {
   beforeAll(async () => {
@@ -34,8 +33,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
 
       // Action & Assert
@@ -55,8 +53,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
 
       // Action
@@ -76,8 +73,7 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
       await ThreadsTableTestHelper.create({ id: 'thread-1', owner: 'user-123' })
       await ThreadsTableTestHelper.create({ id: 'thread-2', owner: 'user-123' })
@@ -93,8 +89,7 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
 
       // Action & Assert
@@ -113,8 +108,7 @@ describe('ThreadRepositoryPostgres', () => {
       })
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
 
       // action
@@ -136,8 +130,7 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
+        userRepository: UsersTableTestHelper
       });
 
       // Action & Assert
@@ -145,37 +138,19 @@ describe('ThreadRepositoryPostgres', () => {
         .rejects
         .toThrowError(InvariantError)
     })
-
-    it('should throw AuthorizationError when user is not the owner', async () => {
-      // Arrange
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
-      });
-      await ThreadsTableTestHelper.create({ id: 'thread-1', owner: 'user-123' })
-
-      // Action & Assert
-      expect(threadRepositoryPostgres.remove('thread-1', 'user-xxx'))
-        .rejects
-        .toThrowError(AuthorizationError)
-    })
   })
 
-  it('should delete thread from database', async () => {
+  it('should throw AuthorizationError when user is not the owner', async () => {
     // Arrange
     const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper,
-        commentRepository: CommentsTableTestHelper
-      });
+      pool,
+      userRepository: UsersTableTestHelper
+    });
     await ThreadsTableTestHelper.create({ id: 'thread-123', owner: 'user-123' })
 
-    // Action
-    await threadRepositoryPostgres.remove('thread-123', 'user-123')
-
-    // Assert
-    const thread = await ThreadsTableTestHelper.findOneById('thread-123')
-    expect(thread).toBeUndefined()
+    // Action & Assert
+    expect(threadRepositoryPostgres.remove('thread-123', 'user-xxx'))
+      .rejects
+      .toThrowError(AuthorizationError)
   })
 })

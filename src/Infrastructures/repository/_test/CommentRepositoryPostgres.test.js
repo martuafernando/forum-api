@@ -19,6 +19,7 @@ describe('CommentRepositoryPostgres', () => {
 
   afterAll(async () => {
     await UsersTableTestHelper.cleanTable()
+    await ThreadsTableTestHelper.cleanTable()
     await pool.end()
   })
 
@@ -134,10 +135,10 @@ describe('CommentRepositoryPostgres', () => {
       userRepository: UsersTableTestHelper,
       threadRepository: ThreadsTableTestHelper
     });
-    await CommentsTableTestHelper.createThreadComment({ id: 'comment-1', owner: 'user-123' })
+    await CommentsTableTestHelper.createThreadComment({ id: 'comment-123', owner: 'user-123' })
 
     // Action & Assert
-    expect(commentRepositoryPostgres.remove('comment-1', 'user-xxx'))
+    expect(commentRepositoryPostgres.remove('comment-123', 'user-xxx'))
       .rejects
       .toThrowError(AuthorizationError)
   })

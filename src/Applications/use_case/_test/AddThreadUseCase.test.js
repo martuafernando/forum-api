@@ -1,6 +1,7 @@
 const NewThread = require('../../../Domains/threads/entities/NewThread');
 const SavedThread = require('../../../Domains/threads/entities/SavedThread');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
+const AuthenticationTokenManager = require('../../security/AuthenticationTokenManager');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
 describe('AddThreadUseCase', () => {
@@ -12,7 +13,6 @@ describe('AddThreadUseCase', () => {
     const useCasePayload = {
       title: 'thread-title',
       body: 'thread-body',
-      date: 'thread-date',
       owner: '1',
     };
 
@@ -20,38 +20,35 @@ describe('AddThreadUseCase', () => {
       id: 'thread-id',
       title: useCasePayload.title,
       body: useCasePayload.body,
-      date: useCasePayload.date,
+      date: 'thread-date',
       owner: useCasePayload.owner,
     });
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
+    const mockauthenticationTokenManager = new AuthenticationTokenManager();
 
     /** mocking needed function */
     mockThreadRepository.create = jest.fn()
       .mockImplementation(() => Promise.resolve(mockSavedThread));
+    mockauthenticationTokenManager.decodePayload = jest.fn()
+      .mockImplementation(() => Promise.resolve({ username: 'dicoding', id: 'user-123' }));
 
     /** creating use case instance */
     const getThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
+      authenticationTokenManager: mockauthenticationTokenManager,
     });
 
     // Action
-    const savedThread = await getThreadUseCase.execute(useCasePayload);
+    const savedThread = await getThreadUseCase.execute('example-token-access', useCasePayload);
 
     // Assert
-    expect(savedThread).toStrictEqual(new SavedThread({
-      id: 'thread-id',
-      title: useCasePayload.title,
-      body: useCasePayload.body,
-      date: useCasePayload.date,
-      owner: useCasePayload.owner,
-    }));
+    expect(savedThread).toStrictEqual(new SavedThread(mockSavedThread));
 
     expect(mockThreadRepository.create).toBeCalledWith(new NewThread({
       title: useCasePayload.title,
       body: useCasePayload.body,
-      date: useCasePayload.date,
       owner: useCasePayload.owner,
     }));
   });

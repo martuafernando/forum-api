@@ -23,6 +23,15 @@ const UsersTableTestHelper = {
     return result.rows;
   },
 
+  async findAll() {
+    const query = {
+      text: 'SELECT * FROM users',
+    };
+
+    const result = await pool.query(query);
+    return result.rows;
+  },
+
   async findOneById(id) {
     const query = {
       text: 'SELECT * FROM users WHERE id = $1',

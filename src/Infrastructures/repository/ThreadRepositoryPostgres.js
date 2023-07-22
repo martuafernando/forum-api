@@ -9,13 +9,11 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     pool,
     idGenerator,
     userRepository,
-    commentRepository
   }) {
     super();
     this._pool = pool;
     this._idGenerator = idGenerator;
     this._userRepositoryPostgres = userRepository
-    this._commentRepositoryPostgres = commentRepository
   }
 
   async create(newThread) {
@@ -33,7 +31,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query);
 
-    return new NewThread({ ...result.rows[0] });
+    return new SavedThread({ ...result.rows[0] });
   }
 
   async findAll(customQuery) {
