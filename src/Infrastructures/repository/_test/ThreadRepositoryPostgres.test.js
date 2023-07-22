@@ -153,4 +153,20 @@ describe('ThreadRepositoryPostgres', () => {
       .rejects
       .toThrowError(AuthorizationError)
   })
+
+  it('should delete thread from database', async () => {
+    // Arrange
+    const threadRepositoryPostgres = new ThreadRepositoryPostgres({
+        pool,
+        userRepository: UsersTableTestHelper
+      });
+    await ThreadsTableTestHelper.create({ id: 'thread-123', owner: 'user-123' })
+
+    // Action
+    await threadRepositoryPostgres.remove('thread-123', 'user-123')
+
+    // Assert
+    const thread = await ThreadsTableTestHelper.findOneById('thread-123')
+    expect(thread).toBeUndefined()
+  })
 })

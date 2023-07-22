@@ -42,9 +42,6 @@ describe('/threads endpoint', () => {
     });
     const { data: { accessToken } } = JSON.parse(loginResponse.payload);
 
-    console.log('testing::babi', await loginResponse.payload)
-    console.log('testing::babi', await UsersTableTestHelper.findAll())
-
     // Action
     const response = await server.inject({
       method: 'POST',
@@ -54,7 +51,6 @@ describe('/threads endpoint', () => {
       },
       payload: requestPayload,
     });
-    console.log('testing::', response.payload)
 
     // Assert
     const responseJson = JSON.parse(response.payload);
