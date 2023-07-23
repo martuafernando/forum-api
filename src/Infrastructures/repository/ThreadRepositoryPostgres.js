@@ -31,7 +31,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query);
 
-    return new SavedThread({ ...result.rows[0] });
+    return new SavedThread(result.rows[0]);
   }
 
   async findAll(customQuery) {

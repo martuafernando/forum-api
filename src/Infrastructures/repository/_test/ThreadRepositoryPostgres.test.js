@@ -146,10 +146,10 @@ describe('ThreadRepositoryPostgres', () => {
       pool,
       userRepository: UsersTableTestHelper
     });
-    await ThreadsTableTestHelper.create({ id: 'thread-123', owner: 'user-123' })
+    await ThreadsTableTestHelper.create({ id: 'thread-231', owner: 'user-123' })
 
     // Action & Assert
-    expect(threadRepositoryPostgres.remove('thread-123', 'user-xxx'))
+    expect(threadRepositoryPostgres.remove('thread-231', 'user-xxx'))
       .rejects
       .toThrowError(AuthorizationError)
   })
@@ -160,13 +160,13 @@ describe('ThreadRepositoryPostgres', () => {
         pool,
         userRepository: UsersTableTestHelper
       });
-    await ThreadsTableTestHelper.create({ id: 'thread-123', owner: 'user-123' })
+    await ThreadsTableTestHelper.create({ id: 'thread-321', owner: 'user-123' })
 
     // Action
-    await threadRepositoryPostgres.remove('thread-123', 'user-123')
+    await threadRepositoryPostgres.remove('thread-321', 'user-123')
 
     // Assert
-    const thread = await ThreadsTableTestHelper.findOneById('thread-123')
+    const thread = await ThreadsTableTestHelper.findOneById('thread-321')
     expect(thread).toBeUndefined()
   })
 })
