@@ -4,14 +4,15 @@ class NewComment {
 
     this.content = payload.content;
     this.owner = payload.owner;
+    this.target = payload.target;
   }
 
-  _verifyPayload({ content, owner }) {
-    if (!content || !owner) {
+  _verifyPayload({ content, owner, target }) {
+    if (!content || !owner || !target) {
       throw new Error('NEW_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
     
-    if (typeof content !== 'string' || typeof owner !== 'string') {
+    if (typeof content !== 'string' || typeof owner !== 'string' || typeof target !== 'string') {
       throw new Error('NEW_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

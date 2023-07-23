@@ -149,7 +149,7 @@ describe('ThreadRepositoryPostgres', () => {
     await ThreadsTableTestHelper.create({ id: 'thread-231', owner: 'user-123' })
 
     // Action & Assert
-    expect(threadRepositoryPostgres.remove('thread-231', 'user-xxx'))
+    await expect(threadRepositoryPostgres.remove('thread-231', 'user-xxx'))
       .rejects
       .toThrowError(AuthorizationError)
   })
@@ -163,7 +163,9 @@ describe('ThreadRepositoryPostgres', () => {
     await ThreadsTableTestHelper.create({ id: 'thread-321', owner: 'user-123' })
 
     // Action
-    await threadRepositoryPostgres.remove('thread-321', 'user-123')
+    await expect(threadRepositoryPostgres.remove('thread-321', 'user-123'))
+      .resolves
+      .toBeUndefined()
 
     // Assert
     const thread = await ThreadsTableTestHelper.findOneById('thread-321')

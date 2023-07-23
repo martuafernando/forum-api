@@ -16,6 +16,7 @@ describe('NewComment entities', () => {
     const payload = {
       content: 'comment content',
       owner: 1,
+      target: 'target-id',
     };
 
     // Action & Assert
@@ -27,6 +28,7 @@ describe('NewComment entities', () => {
     const payload = {
       content: 'commment content',
       owner: 'user-id',
+      target: 'target-id',
     };
 
     // Action
@@ -36,5 +38,6 @@ describe('NewComment entities', () => {
     expect(newComment).toBeInstanceOf(NewComment);
     expect(newComment.content).toEqual(payload.content);
     expect(newComment.owner).toEqual(payload.owner);
+    expect(newComment.target).toEqual(payload.target);
   });
 });

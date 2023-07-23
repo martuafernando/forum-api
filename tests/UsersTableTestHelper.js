@@ -42,6 +42,23 @@ const UsersTableTestHelper = {
     return result.rows?.[0];
   },
 
+  async getIdByUsername(username) {
+    const query = {
+      text: 'SELECT id FROM users WHERE username = $1',
+      values: [username],
+    };
+
+    const result = await pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('user tidak ditemukan');
+    }
+
+    const { id } = result.rows[0];
+
+    return id;
+  },
+
   async cleanTable() {
     await pool.query('DELETE FROM users WHERE 1=1');
   },

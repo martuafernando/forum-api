@@ -29,6 +29,7 @@ describe('CommentRepositoryPostgres', () => {
       const newComment = new NewComment({
         content: 'comment-content',
         owner: 'user-xxx',
+        target: 'thread-123'
       })
       const fakeIdGenerator = () => '123' // stub!
       const commentRepositoryPostgres = new CommentRepositoryPostgres({
@@ -49,6 +50,7 @@ describe('CommentRepositoryPostgres', () => {
       const newComment = new NewComment({
         content: 'comment-content',
         owner: 'user-123',
+        target: 'thread-123'
       })
       const fakeIdGenerator = () => '123' // stub!
       const commentRepositoryPostgres = new CommentRepositoryPostgres({

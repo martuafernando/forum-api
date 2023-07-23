@@ -44,7 +44,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async findOneById(id) {
     const query = {
-      text: 'SELECT * FROM threads WHERE (id = $1) AND (is_deleted = false)',
+      text: `SELECT * FROM threads
+            WHERE (id = $1) AND (is_deleted = false)`,
       values: [id],
     };
 

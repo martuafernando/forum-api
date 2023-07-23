@@ -1,5 +1,4 @@
 const InvariantError = require('../../Commons/exceptions/InvariantError');
-const NewComment = require('../../Domains/comments/entities/NewComment');
 const SavedComment = require('../../Domains/comments/entities/SavedComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
@@ -18,8 +17,9 @@ class CommentRepositoryPostgres extends CommentRepository {
     this._threadRepositoryPostgres = threadRepository
   }
 
-  async createThreadComment(newComment, threadId) {
-    if(!await this._threadRepositoryPostgres.findOneById(threadId)) throw new InvariantError('Thread tidak ditemukan')
+  async createThreadComment(newComment) {
+    const threadId = newComment.target
+    if(!await this._threadRepositoryPostgres.findOneById(threadId)) throw new InvariantError('thread tidak ditemukan')
     const { content, owner } = newComment;
     const currentDate = new Date().toISOString()
     
@@ -40,7 +40,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [threadId, id],
     })
 
-    return new NewComment({ ...result.rows[0] });
+    return new SavedComment(result.rows[0]);
   }
 
   async findAllFromThread(threadId) {

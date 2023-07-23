@@ -5,10 +5,10 @@ const UserApiTestHelper = {
   async getAccessTokenFromUser({
     username = 'dicoding',
     password = 'secret',
-    fullname = 'Dicoding Indonesia',
+    fullname = 'Dicoding Indonesia'
   }) {
     const server = await createServer(container);
-
+    
     // Add user
     await server.inject({
       method: 'POST',
@@ -19,6 +19,7 @@ const UserApiTestHelper = {
         fullname,
       },
     });
+    
     // Login user
     const loginResponse = await server.inject({
       method: 'POST',
@@ -28,8 +29,28 @@ const UserApiTestHelper = {
         password,
       },
     });
-    const { data: { accessToken } } = JSON.parse(loginResponse.payload);
+
+    const { data: { accessToken } } = JSON.parse(loginResponse.payload)
     return accessToken
+  },
+
+  async registerUser({
+    username = 'dicoding',
+    password = 'secret',
+    fullname = 'Dicoding Indonesia'
+  }) {
+    const server = await createServer(container);
+    
+    // Add user
+    await server.inject({
+      method: 'POST',
+      url: '/users',
+      payload: {
+        username,
+        password,
+        fullname,
+      },
+    });
   }
 }
 

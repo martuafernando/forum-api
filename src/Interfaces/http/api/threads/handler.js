@@ -11,11 +11,14 @@ class ThreadsHandler {
     const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
     const addThreadUseCase = this._container.getInstance(AddThreadUseCase.name);
     const addedThread = await addThreadUseCase.execute(accessToken, request.payload);
-
     const response = h.response({
       status: 'success',
       data: {
-        addedThread,
+        addedThread :{
+          title: addedThread.title,
+          body: addedThread.body,
+          owner: addedThread.owner,
+        },
       },
     });
     response.code(201);
