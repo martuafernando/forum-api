@@ -38,13 +38,13 @@ describe('CommentRepositoryPostgres', () => {
         idGenerator: fakeIdGenerator,
         userRepository: UsersTableTestHelper,
         threadRepository: ThreadsTableTestHelper
-      });
-      
+      })
+
       // Action & Assert
       return expect(commentRepositoryPostgres.createThreadComment(newComment, 'thread-123'))
         .rejects
-        .toThrowError(InvariantError);
-    });
+        .toThrowError(InvariantError)
+    })
 
     it('should persist new thread comment and return saved thread comment correctly', async () => {
       // Arrange
@@ -59,16 +59,16 @@ describe('CommentRepositoryPostgres', () => {
         idGenerator: fakeIdGenerator,
         threadRepository: ThreadsTableTestHelper,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // Action
       await commentRepositoryPostgres.createThreadComment(newComment, 'thread-123')
 
       // Assert
-      const comments = await CommentsTableTestHelper.findOneById('comment-123');
-      expect(comments).toBeInstanceOf(SavedComment);
-      expect(comments.content).toEqual(newComment.content);
-      expect(comments.owner).toEqual(newComment.owner);
+      const comments = await CommentsTableTestHelper.findOneById('comment-123')
+      expect(comments).toBeInstanceOf(SavedComment)
+      expect(comments.content).toEqual(newComment.content)
+      expect(comments.owner).toEqual(newComment.owner)
     })
   })
 
@@ -80,8 +80,8 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.createThreadComment({ id: 'comment-2', owner: 'user-123' })
 
       // Assert & Assert
-      const comments = await commentRepositoryPostgres.findAllFromThread('thread-123');
-      expect(comments).toHaveLength(2);
+      const comments = await commentRepositoryPostgres.findAllFromThread('thread-123')
+      expect(comments).toHaveLength(2)
     })
   })
 
@@ -91,8 +91,8 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
 
       // Action & Assert
-      const comments = await commentRepositoryPostgres.findOneById('comment-1');
-      expect(comments).toBeUndefined();
+      const comments = await commentRepositoryPostgres.findOneById('comment-1')
+      expect(comments).toBeUndefined()
     })
 
     it('should return comment when there is comment with id found', async () => {
@@ -101,15 +101,15 @@ describe('CommentRepositoryPostgres', () => {
         id: 'comment-123',
         content: 'comment-content',
         owner: 'user-123',
-        date: '2021-08-08T07:19:09.775Z',
+        date: '2021-08-08T07:19:09.775Z'
       })
       const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
 
       // action
       await CommentsTableTestHelper.createThreadComment(savedComment)
-      const comments = await commentRepositoryPostgres.findOneById('comment-123');
+      const comments = await commentRepositoryPostgres.findOneById('comment-123')
 
-      //Assert
+      // Assert
       expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.id).toEqual(savedComment.id)
       expect(comments.title).toEqual(savedComment.title)
@@ -142,14 +142,14 @@ describe('CommentRepositoryPostgres', () => {
       pool,
       userRepository: UsersTableTestHelper,
       threadRepository: ThreadsTableTestHelper
-    });
+    })
     await CommentsTableTestHelper.createThreadComment(useCasePayload)
 
     // Action & Assert
     await expect(commentRepositoryPostgres.remove({
       id: useCasePayload.id,
       target: useCasePayload.target,
-      owner: 'user-xxx',
+      owner: 'user-xxx'
     }))
       .rejects
       .toThrowError(AuthorizationError)

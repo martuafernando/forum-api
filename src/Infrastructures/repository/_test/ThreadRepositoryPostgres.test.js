@@ -28,44 +28,44 @@ describe('ThreadRepositoryPostgres', () => {
       const newThread = new NewThread({
         title: 'thread-title',
         body: 'thread-body',
-        owner: 'user-xxx',
+        owner: 'user-xxx'
       })
       const fakeIdGenerator = () => '123' // stub!
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         idGenerator: fakeIdGenerator,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // Action & Assert
       return expect(threadRepositoryPostgres.create(newThread))
         .rejects
-        .toThrowError(InvariantError);
-    });
+        .toThrowError(InvariantError)
+    })
 
     it('should persist new thread and return saved thread correctly', async () => {
       // Arrange
       const newThread = new NewThread({
         title: 'thread-title',
         body: 'thread-body',
-        owner: 'user-123',
+        owner: 'user-123'
       })
       const fakeIdGenerator = () => '123' // stub!
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         idGenerator: fakeIdGenerator,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // Action
       await threadRepositoryPostgres.create(newThread)
 
       // Assert
-      const threads = await ThreadsTableTestHelper.findOneById('thread-123');
-      expect(threads).toBeInstanceOf(SavedThread);
-      expect(threads.title).toEqual(newThread.title);
-      expect(threads.body).toEqual(newThread.body);
-      expect(threads.owner).toEqual(newThread.owner);
+      const threads = await ThreadsTableTestHelper.findOneById('thread-123')
+      expect(threads).toBeInstanceOf(SavedThread)
+      expect(threads.title).toEqual(newThread.title)
+      expect(threads.body).toEqual(newThread.body)
+      expect(threads.owner).toEqual(newThread.owner)
     })
   })
 
@@ -75,13 +75,13 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
-      });
+      })
       await ThreadsTableTestHelper.create({ id: 'thread-1', owner: 'user-123' })
       await ThreadsTableTestHelper.create({ id: 'thread-2', owner: 'user-123' })
 
       // Assert & Assert
-      const threads = await threadRepositoryPostgres.findAll();
-      expect(threads).toHaveLength(2);
+      const threads = await threadRepositoryPostgres.findAll()
+      expect(threads).toHaveLength(2)
     })
   })
 
@@ -91,11 +91,11 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // Action & Assert
-      const threads = await threadRepositoryPostgres.findOneById('thread-1');
-      expect(threads).toBeUndefined();
+      const threads = await threadRepositoryPostgres.findOneById('thread-1')
+      expect(threads).toBeUndefined()
     })
 
     it('should return thread when there is thread with threadId found', async () => {
@@ -105,18 +105,18 @@ describe('ThreadRepositoryPostgres', () => {
         title: 'thread-title',
         body: 'thread-body',
         owner: 'user-123',
-        date: '2021-08-08T07:19:09.775Z',
+        date: '2021-08-08T07:19:09.775Z'
       })
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // action
       await ThreadsTableTestHelper.create(savedThread)
-      const threads = await threadRepositoryPostgres.findOneById('thread-123');
+      const threads = await threadRepositoryPostgres.findOneById('thread-123')
 
-      //Assert
+      // Assert
       expect(threads).toBeInstanceOf(SavedThread)
       expect(threads.id).toEqual(savedThread.id)
       expect(threads.title).toEqual(savedThread.title)
@@ -132,7 +132,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
-      });
+      })
 
       // Action & Assert
       expect(threadRepositoryPostgres.remove('thread-1', 'user-123'))
@@ -146,7 +146,7 @@ describe('ThreadRepositoryPostgres', () => {
     const threadRepositoryPostgres = new ThreadRepositoryPostgres({
       pool,
       userRepository: UsersTableTestHelper
-    });
+    })
     await ThreadsTableTestHelper.create({ id: 'thread-231', owner: 'user-123' })
 
     // Action & Assert
@@ -158,9 +158,9 @@ describe('ThreadRepositoryPostgres', () => {
   it('should delete thread from database', async () => {
     // Arrange
     const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper
-      });
+      pool,
+      userRepository: UsersTableTestHelper
+    })
     await ThreadsTableTestHelper.create({ id: 'thread-321', owner: 'user-123' })
 
     // Action

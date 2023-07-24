@@ -2,13 +2,13 @@ const routes = (handler) => ([
   {
     method: 'POST',
     path: '/threads',
-    handler: handler.postThreadHandler,
+    handler: handler.postThreadHandler
   },
   {
     method: 'GET',
     path: '/threads/{threadId}',
-    handler: handler.getDetailThreadHandler,
-  },
-]);
+    handler: handler.getDetailThreadHandler
+  }
+])
 
-module.exports = routes;
+module.exports = routes

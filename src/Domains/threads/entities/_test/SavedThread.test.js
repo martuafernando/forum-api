@@ -1,15 +1,15 @@
-const SavedThread = require('../SavedThread');
+const SavedThread = require('../SavedThread')
 
 describe('SavedThread entities', () => {
   it('should throw error when payload not contain needed property', () => {
     // Arrange
     const payload = {
-      title: 'title',
-    };
+      title: 'title'
+    }
 
     // Action & Assert
-    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
-  });
+    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
+  })
 
   it('should throw error when payload not meet data type specification', () => {
     // Arrange
@@ -18,12 +18,12 @@ describe('SavedThread entities', () => {
       title: 'title',
       body: 'body',
       date: 'date',
-      owner: 1234,
-    };
+      owner: 1234
+    }
 
     // Action & Assert
-    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
-  });
+    expect(() => new SavedThread(payload)).toThrowError('SAVED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
+  })
 
   it('should create SavedThread entities correctly', () => {
     // Arrange
@@ -32,17 +32,17 @@ describe('SavedThread entities', () => {
       title: 'title',
       body: 'body',
       date: 'date',
-      owner: 'userId',
-    };
+      owner: 'userId'
+    }
 
     // Action
-    const savedThread = new SavedThread(payload);
+    const savedThread = new SavedThread(payload)
 
     // Assert
-    expect(savedThread).toBeInstanceOf(SavedThread);
-    expect(savedThread.id).toEqual(payload.id);
-    expect(savedThread.title).toEqual(payload.title);
-    expect(savedThread.date).toEqual(payload.date);
-    expect(savedThread.owner).toEqual(payload.owner);
-  });
-});
+    expect(savedThread).toBeInstanceOf(SavedThread)
+    expect(savedThread.id).toEqual(payload.id)
+    expect(savedThread.title).toEqual(payload.title)
+    expect(savedThread.date).toEqual(payload.date)
+    expect(savedThread.owner).toEqual(payload.owner)
+  })
+})

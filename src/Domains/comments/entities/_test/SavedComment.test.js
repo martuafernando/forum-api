@@ -1,15 +1,15 @@
-const SavedComment = require('../SavedComment');
+const SavedComment = require('../SavedComment')
 
 describe('SavedComment entities', () => {
   it('should throw error when payload not contain needed property', () => {
     // Arrange
     const payload = {
-      content: 'comment content',
-    };
+      content: 'comment content'
+    }
 
     // Action & Assert
-    expect(() => new SavedComment(payload)).toThrowError('SAVED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
-  });
+    expect(() => new SavedComment(payload)).toThrowError('SAVED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')
+  })
 
   it('should throw error when payload not meet data type specification', () => {
     // Arrange
@@ -17,12 +17,12 @@ describe('SavedComment entities', () => {
       id: 'comment-id',
       content: 'comment content',
       date: '2021-08-08T07:19:09.775Z',
-      owner: 1234,
-    };
+      owner: 1234
+    }
 
     // Action & Assert
-    expect(() => new SavedComment(payload)).toThrowError('SAVED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
-  });
+    expect(() => new SavedComment(payload)).toThrowError('SAVED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')
+  })
 
   it('should create SavedComment entities correctly', () => {
     // Arrange
@@ -30,17 +30,16 @@ describe('SavedComment entities', () => {
       id: 'comment-id',
       content: 'comment content',
       date: '2021-08-08T07:19:09.775Z',
-      owner: 'user-id',
-    };
+      owner: 'user-id'
+    }
 
     // Action
-    const savedComment = new SavedComment(payload);
+    const savedComment = new SavedComment(payload)
 
     // Assert
-    expect(savedComment).toBeInstanceOf(SavedComment);
-    expect(savedComment.id).toEqual(payload.id);
-    expect(savedComment.content).toEqual(payload.content);
-    expect(savedComment.owner).toEqual(payload.owner);
-
-  });
-});
+    expect(savedComment).toBeInstanceOf(SavedComment)
+    expect(savedComment.id).toEqual(payload.id)
+    expect(savedComment.content).toEqual(payload.content)
+    expect(savedComment.owner).toEqual(payload.owner)
+  })
+})

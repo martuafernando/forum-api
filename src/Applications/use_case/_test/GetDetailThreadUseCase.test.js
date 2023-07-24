@@ -1,44 +1,44 @@
-const GetDetailThreadUseCase = require("../GetDetailThreadUseCase");
-const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const CommentRepository = require("../../../Domains/comments/CommentRepository");
-const UserRepository = require("../../../Domains/users/UserRepository");
+const GetDetailThreadUseCase = require('../GetDetailThreadUseCase')
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
+const CommentRepository = require('../../../Domains/comments/CommentRepository')
+const UserRepository = require('../../../Domains/users/UserRepository')
 
 describe('GetDetailThreadUseCase', () => {
   it('should throw error if use case payload not contain threadId', async () => {
     // Arrange
-    const useCasePayload = {};
-    const getDetailThreadUseCase = new GetDetailThreadUseCase({});
+    const useCasePayload = {}
+    const getDetailThreadUseCase = new GetDetailThreadUseCase({})
 
     // Action & Assert
     await expect(getDetailThreadUseCase.execute(useCasePayload))
       .rejects
-      .toThrowError('GET_DETAIL_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID');
-  });
+      .toThrowError('GET_DETAIL_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID')
+  })
 
   it('should throw error if threadId not string', async () => {
     // Arrange
     const useCasePayload = {
-      id: 1,
-    };
-    const getDetailThreadUseCase = new GetDetailThreadUseCase({});
+      id: 1
+    }
+    const getDetailThreadUseCase = new GetDetailThreadUseCase({})
 
     // Action & Assert
     await expect(getDetailThreadUseCase.execute(useCasePayload))
       .rejects
-      .toThrowError('GET_DETAIL_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION');
-  });
+      .toThrowError('GET_DETAIL_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION')
+  })
 
   it('should orchestrating the get detail thread action correctly', async () => {
     // Arrange
     const useCasePayload = {
-      id: 'thread-id',
-    };
+      id: 'thread-id'
+    }
     const savedThread = {
-      id : 'thread-123',
-      title : 'thread-123 title',
-      body : 'thread-123 body',
-      date : 'thread-123-date',
-      owner : 'user-123',
+      id: 'thread-123',
+      title: 'thread-123 title',
+      body: 'thread-123 body',
+      date: 'thread-123-date',
+      owner: 'user-123'
     }
     const savedComments = [
       {
@@ -52,16 +52,16 @@ describe('GetDetailThreadUseCase', () => {
         content: 'comment-2 content',
         date: 'comment-2-date',
         owner: 'user-234'
-      },
+      }
     ]
     const registeredUser = {
       id: 'user-123',
       username: 'dicoding',
-      fullname: 'Dicoding Indonesia',
+      fullname: 'Dicoding Indonesia'
     }
-    const mockThreadRepository = new ThreadRepository();
-    const mockCommentRepository = new CommentRepository();
-    const mockUserRepository = new UserRepository();
+    const mockThreadRepository = new ThreadRepository()
+    const mockCommentRepository = new CommentRepository()
+    const mockUserRepository = new UserRepository()
 
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
@@ -74,7 +74,7 @@ describe('GetDetailThreadUseCase', () => {
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
-      userRepository: mockUserRepository,
+      userRepository: mockUserRepository
     })
 
     // Action
@@ -85,10 +85,10 @@ describe('GetDetailThreadUseCase', () => {
     expect(thread.username).toBeDefined()
 
     expect(mockThreadRepository.findOneById)
-      .toBeCalledWith(useCasePayload.id);
+      .toBeCalledWith(useCasePayload.id)
     expect(mockCommentRepository.findAllFromThread)
-      .toBeCalledWith(useCasePayload.id);
+      .toBeCalledWith(useCasePayload.id)
     expect(mockUserRepository.findOneById)
-      .toBeCalledWith(registeredUser.id);
-  });
+      .toBeCalledWith(registeredUser.id)
+  })
 })
