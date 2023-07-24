@@ -46,7 +46,7 @@ class CommentRepositoryPostgres extends CommentRepository {
   async findAllFromThread(threadId) {
     const query = {
       text: `SELECT * FROM link_thread_comment
-        WHERE thread_id = $1`,
+              WHERE target_id = $1`,
       values: [threadId]
     };
     const result = await this._pool.query(query);
@@ -63,16 +63,22 @@ class CommentRepositoryPostgres extends CommentRepository {
     return result.rows?.[0] ? new SavedComment(result.rows?.[0]) : undefined;
   }
 
-  async remove(commentId, ownerId) {
-    const comment = await this.findOneById(commentId)
+  async remove({ id, target, owner }) {
+    const comment = await this.findOneById(id)
     if (!comment) throw new InvariantError('Comment tidak ditemukan')
-    if (comment.owner !== ownerId) throw new AuthorizationError('Forbidden')
+    if (comment.owner !== owner) throw new AuthorizationError('Forbidden')
+
+    await this._pool.query({
+      text: `DELETE FROM link_thread_comment
+        WHERE (target_id = $1) AND (comment_id = $2)`,
+      values: [target, owner]
+    })
 
     const query = {
       text: `UPDATE comments
         SET is_deleted = true
         WHERE id = $1`,
-      values: [commentId]
+      values: [id]
     };
     await this._pool.query(query);
   }

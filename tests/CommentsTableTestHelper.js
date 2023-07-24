@@ -7,8 +7,9 @@ const CommentsTableTestHelper = {
     id = 'comment-123',
     content = 'comment-content',
     date = '2021-08-08T07:19:09.775Z',
+    target ='thread-123',
     owner = 'user-123',
-  }, threadId ='thread-123') {
+  }) {
     const query = {
       text: 'INSERT INTO comments VALUES($1, $2, $3, $4)',
       values: [id, content, date, owner],
@@ -18,7 +19,7 @@ const CommentsTableTestHelper = {
     await pool.query({
       text: `INSERT INTO link_thread_comment
             VALUES($1, $2)`,
-      values: [threadId, id],
+      values: [target, id],
     })
   },
 
@@ -30,6 +31,15 @@ const CommentsTableTestHelper = {
 
     const result = await pool.query(query);
     return result.rows?.[0] ? new SavedComment(result.rows?.[0]) : undefined;
+  },
+
+  async findAll() {
+    const query = {
+      text: 'SELECT * FROM comments',
+    };
+
+    const result = await pool.query(query);
+    return result.rows;
   },
 
   async cleanTable() {

@@ -2,7 +2,7 @@
 
 exports.up = (pgm) => {
   pgm.createTable('link_thread_comment', {
-    thread_id: {
+    target_id: {
       type: 'VARCHAR(50)',
       notNull: true,
     },
