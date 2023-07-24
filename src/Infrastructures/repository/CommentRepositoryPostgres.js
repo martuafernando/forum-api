@@ -48,7 +48,8 @@ class CommentRepositoryPostgres extends CommentRepository {
     const query = {
       text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
               INNER JOIN comments ON comments.id = comment_id
-              WHERE (target_id = $1)`,
+              WHERE (target_id = $1)
+              ORDER BY date ASC`,
       values: [threadId]
     };
     const result = await this._pool.query(query);
