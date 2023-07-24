@@ -1,5 +1,6 @@
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const NewThread = require('../../Domains/threads/entities/NewThread');
 const SavedThread = require('../../Domains/threads/entities/SavedThread');
 const ThreadRepository = require('../../Domains/threads/ThreadRepository');
@@ -55,7 +56,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async remove(threadId, ownerId) {
     const thread = await this.findOneById(threadId)
-    if (!thread) throw new InvariantError('Thread tidak ditemukan')
+    if (!thread) throw new NotFoundError('Thread tidak ditemukan')
     if (thread.owner !== ownerId) throw new AuthorizationError('Forbidden')
 
     const query = {

@@ -6,6 +6,7 @@ const NewThread = require('../../../Domains/threads/entities/NewThread')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 
 describe('ThreadRepositoryPostgres', () => {
   beforeAll(async () => {
@@ -136,7 +137,7 @@ describe('ThreadRepositoryPostgres', () => {
       // Action & Assert
       expect(threadRepositoryPostgres.remove('thread-1', 'user-123'))
         .rejects
-        .toThrowError(InvariantError)
+        .toThrowError(NotFoundError)
     })
   })
 

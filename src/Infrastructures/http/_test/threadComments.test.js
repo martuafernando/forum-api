@@ -94,7 +94,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
   
       // Assert
       const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(400);
+      expect(response.statusCode).toEqual(404);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('thread tidak ditemukan');
     });

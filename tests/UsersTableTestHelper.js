@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+const InvariantError = require('../src/Commons/exceptions/InvariantError');
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const UsersTableTestHelper = {

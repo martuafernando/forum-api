@@ -17,7 +17,7 @@ class ThreadsHandler {
     const response = h.response({
       status: 'success',
       data: {
-        addedCommentThread,
+        addedComment: addedCommentThread,
       },
     });
     response.code(201);

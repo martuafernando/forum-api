@@ -35,13 +35,13 @@ describe('AddThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve({ username: 'dicoding', id: 'user-123' }));
 
     /** creating use case instance */
-    const getThreadUseCase = new AddThreadUseCase({
+    const addThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
       authenticationTokenManager: mockauthenticationTokenManager,
     });
 
     // Action
-    const savedThread = await getThreadUseCase.execute('example-token-access', useCasePayload);
+    const savedThread = await addThreadUseCase.execute('example-token-access', useCasePayload);
 
     // Assert
     expect(savedThread).toStrictEqual(new SavedThread(mockSavedThread));

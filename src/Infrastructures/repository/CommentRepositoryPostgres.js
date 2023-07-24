@@ -20,7 +20,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async createThreadComment(newComment) {
     const threadId = newComment.target
-    if(!await this._threadRepositoryPostgres.findOneById(threadId)) throw new InvariantError('thread tidak ditemukan')
+    if(!await this._threadRepositoryPostgres.findOneById(threadId)) throw new NotFoundError('thread tidak ditemukan')
     const { content, owner } = newComment;
     const currentDate = new Date().toISOString()
     
@@ -46,8 +46,9 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async findAllFromThread(threadId) {
     const query = {
-      text: `SELECT * FROM link_thread_comment
-              WHERE target_id = $1`,
+      text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
+              INNER JOIN comments ON comments.id = comment_id
+              WHERE (target_id = $1)`,
       values: [threadId]
     };
     const result = await this._pool.query(query);
