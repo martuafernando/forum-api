@@ -7,6 +7,7 @@ const NewComment = require('../../../Domains/comments/entities/NewComment')
 const SavedComment = require('../../../Domains/comments/entities/SavedComment')
 const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 describe('CommentRepositoryPostgres', () => {
   beforeAll(async () => {
     await UsersTableTestHelper.addUser({ id: 'user-123' })
@@ -126,7 +127,7 @@ describe('CommentRepositoryPostgres', () => {
       // Action & Assert
       expect(commentRepositoryPostgres.remove('comment-1', 'user-123'))
         .rejects
-        .toThrowError(InvariantError)
+        .toThrowError(NotFoundError)
     })
   })
 
