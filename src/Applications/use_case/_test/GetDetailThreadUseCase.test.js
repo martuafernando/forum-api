@@ -40,20 +40,6 @@ describe('GetDetailThreadUseCase', () => {
       date: 'thread-123-date',
       owner: 'user-123'
     }
-    const savedComments = [
-      {
-        id: 'comment-1',
-        content: 'comment-1 content',
-        date: 'comment-1-date',
-        owner: 'user-123'
-      },
-      {
-        id: 'comment-2',
-        content: 'comment-2 content',
-        date: 'comment-2-date',
-        owner: 'user-234'
-      }
-    ]
     const registeredUser = {
       id: 'user-123',
       username: 'dicoding',
@@ -67,7 +53,7 @@ describe('GetDetailThreadUseCase', () => {
     mockThreadRepository.findOneById = jest.fn()
       .mockImplementation(() => Promise.resolve(savedThread))
     mockCommentRepository.findAllFromTarget = jest.fn()
-      .mockImplementation(() => Promise.resolve(savedComments))
+      .mockImplementation(() => Promise.resolve())
     mockUserRepository.findOneById = jest.fn()
       .mockImplementation(() => Promise.resolve(registeredUser))
 

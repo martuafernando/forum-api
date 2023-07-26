@@ -4,20 +4,20 @@ exports.up = (pgm) => {
   pgm.createTable('threads', {
     id: {
       type: 'VARCHAR(50)',
-      primaryKey: true,
+      primaryKey: true
     },
     title: {
       type: 'VARCHAR(50)',
-      notNull: true,
+      notNull: true
     },
     body: {
       type: 'TEXT',
-      notNull: true,
+      notNull: true
     },
     date: {
       type: 'TEXT',
       notNull: true,
-      default: pgm.func('CURRENT_TIMESTAMP'),
+      default: pgm.func('CURRENT_TIMESTAMP')
     },
     owner: {
       type: 'VARCHAR(50)',
@@ -30,9 +30,9 @@ exports.up = (pgm) => {
       notNull: true,
       default: false
     }
-  });
-};
+  })
+}
 
 exports.down = (pgm) => {
-  pgm.dropTable('threads');
-};
+  pgm.dropTable('threads')
+}

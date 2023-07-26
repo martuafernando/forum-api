@@ -8,6 +8,7 @@ class ThreadsHandler {
     this.postThreadCommentsHandler = this.postThreadCommentsHandler.bind(this)
     this.deleteThreadCommentsHandler = this.deleteThreadCommentsHandler.bind(this)
     this.postRepliesCommentsHandler = this.postRepliesCommentsHandler.bind(this)
+    this.deleteRepliesCommentsHandler = this.deleteRepliesCommentsHandler.bind(this)
   }
 
   async postThreadCommentsHandler (request, h) {
@@ -55,6 +56,22 @@ class ThreadsHandler {
       }
     })
     response.code(201)
+    return response
+  }
+
+  async deleteRepliesCommentsHandler (request, h) {
+    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
+    const { commentId: target, replyId: id } = request.params
+    const deleteThreadCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name)
+    await deleteThreadCommentUseCase.execute(accessToken, {
+      id,
+      target
+    })
+
+    const response = h.response({
+      status: 'success'
+    })
+    response.code(200)
     return response
   }
 }

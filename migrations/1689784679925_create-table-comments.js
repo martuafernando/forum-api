@@ -4,16 +4,16 @@ exports.up = (pgm) => {
   pgm.createTable('comments', {
     id: {
       type: 'VARCHAR(50)',
-      primaryKey: true,
+      primaryKey: true
     },
     content: {
       type: 'TEXT',
-      notNull: true,
+      notNull: true
     },
     date: {
       type: 'TEXT',
       notNull: true,
-      default: pgm.func('CURRENT_TIMESTAMP'),
+      default: pgm.func('CURRENT_TIMESTAMP')
     },
     owner: {
       type: 'VARCHAR(50)',
@@ -26,9 +26,9 @@ exports.up = (pgm) => {
       notNull: true,
       default: false
     }
-  });
-};
+  })
+}
 
 exports.down = (pgm) => {
-  pgm.dropTable('comments');
-};
+  pgm.dropTable('comments')
+}

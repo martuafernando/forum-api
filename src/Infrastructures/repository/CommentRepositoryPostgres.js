@@ -36,7 +36,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query)
 
     await this._pool.query({
-      text: `INSERT INTO link_thread_comment
+      text: `INSERT INTO link_target_comment
             VALUES($1, $2)`,
       values: [threadId, id]
     })
@@ -62,7 +62,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query)
 
     await this._pool.query({
-      text: `INSERT INTO link_thread_comment
+      text: `INSERT INTO link_target_comment
             VALUES($1, $2)`,
       values: [commentId, id]
     })
@@ -72,7 +72,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async findAllFromTarget (target) {
     const query = {
-      text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
+      text: `SELECT comments.id, content, date, owner, is_deleted FROM link_target_comment
               INNER JOIN comments ON comments.id = comment_id
               WHERE (target_id = $1)
               ORDER BY date ASC`,
@@ -94,11 +94,21 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async remove ({ id, target, owner }) {
     const comment = await this.findOneById(id)
+    const savedTarget = {}
+    switch (target.split('-')?.[0]) {
+      case 'comment':
+        Object.assign(savedTarget, await this.findOneById(target))
+        break
+      case 'thread':
+        Object.assign(savedTarget, await this._threadRepositoryPostgres.findOneById(target))
+        break
+    }
+    if (Object.keys(savedTarget).length <= 0) throw new NotFoundError('target comment tidak ditemukan')
     if (!comment) throw new NotFoundError('comment tidak ditemukan')
     if (comment.owner !== owner) throw new AuthorizationError('Forbidden')
 
     await this._pool.query({
-      text: `DELETE FROM link_thread_comment
+      text: `DELETE FROM link_target_comment
         WHERE (target_id = $1) AND (comment_id = $2)`,
       values: [target, owner]
     })

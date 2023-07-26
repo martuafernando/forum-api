@@ -9,18 +9,18 @@ const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 describe('CommentRepositoryPostgres', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await UsersTableTestHelper.addUser({ id: 'user-123' })
     await ThreadsTableTestHelper.create({ id: 'thread-123' })
   })
 
   afterEach(async () => {
     await CommentsTableTestHelper.cleanTable()
+    await UsersTableTestHelper.cleanTable()
+    await ThreadsTableTestHelper.cleanTable()
   })
 
   afterAll(async () => {
-    await UsersTableTestHelper.cleanTable()
-    await ThreadsTableTestHelper.cleanTable()
     await pool.end()
   })
 
@@ -193,57 +193,70 @@ describe('CommentRepositoryPostgres', () => {
   })
 
   describe('remove function', () => {
-    it('should throw InvariantError when comment not found', async () => {
+    it('should throw InvariantError when target comment not found', async () => {
       // Arrange
-      const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
+      const useCasePayload = {
+        id: 'comment-123',
+        target: 'thread-xxx',
+        owner: 'user-123'
+      }
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper,
+      })
 
       // Action & Assert
-      expect(commentRepositoryPostgres.remove('comment-1', 'user-123'))
+      expect(commentRepositoryPostgres.remove(useCasePayload))
         .rejects
         .toThrowError(NotFoundError)
     })
-  })
 
-  it('should throw AuthorizationError when user is not the owner', async () => {
-    // Arrange
-    const useCasePayload = {
-      id: 'comment-123',
-      target: 'thread-123',
-      owner: 'user-123'
-    }
-    const commentRepositoryPostgres = new CommentRepositoryPostgres({
-      pool,
-      userRepository: UsersTableTestHelper,
-      threadRepository: ThreadsTableTestHelper
+    it('should throw AuthorizationError when user is not the owner', async () => {
+      // Arrange
+      const useCasePayload = {
+        id: 'comment-123',
+        target: 'thread-123',
+        owner: 'user-123'
+      }
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
+      })
+      await CommentsTableTestHelper.createThreadComment(useCasePayload)
+
+      // Action & Assert
+      await expect(commentRepositoryPostgres.remove({
+        id: useCasePayload.id,
+        target: useCasePayload.target,
+        owner: 'user-xxx'
+      }))
+        .rejects
+        .toThrowError(AuthorizationError)
     })
-    await CommentsTableTestHelper.createThreadComment(useCasePayload)
 
-    // Action & Assert
-    await expect(commentRepositoryPostgres.remove({
-      id: useCasePayload.id,
-      target: useCasePayload.target,
-      owner: 'user-xxx'
-    }))
-      .rejects
-      .toThrowError(AuthorizationError)
-  })
+    it('should delete comment from database', async () => {
+      // Arrange
+      const useCasePayload = {
+        id: 'comment-123',
+        target: 'thread-123',
+        owner: 'user-123'
+      }
 
-  it('should delete comment from database', async () => {
-    // Arrange
-    const useCasePayload = {
-      id: 'comment-123',
-      target: 'thread-123',
-      owner: 'user-123'
-    }
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
+      })
+      await CommentsTableTestHelper.createThreadComment(useCasePayload)
 
-    const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
-    await CommentsTableTestHelper.createThreadComment(useCasePayload)
+      // Action
+      await commentRepositoryPostgres.remove(useCasePayload)
 
-    // Action
-    await commentRepositoryPostgres.remove(useCasePayload)
-
-    // Assert
-    const comment = await CommentsTableTestHelper.findOneById('comment-123')
-    expect(comment).toBeUndefined()
+      // Assert
+      const comment = await CommentsTableTestHelper.findOneById('comment-123')
+      expect(comment).toBeUndefined()
+    })
   })
 })

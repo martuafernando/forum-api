@@ -23,15 +23,32 @@ class GetDetailThreadUseCase {
 
   async getComment (id) {
     const comments = await this._commentRepository.findAllFromTarget(id)
-    return await Promise.all(comments.map(async (comment) => {
-      return {
-        id: comment.id,
-        username: (await this._userRepository.findOneById(comment.owner)).username,
-        date: comment.date,
-        content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
-        replies: await this.getComment(comment.id)
-      }
-    }))
+    return comments
+      ? await Promise.all(comments.map(async (comment) => {
+        return {
+          id: comment.id,
+          username: (await this._userRepository.findOneById(comment.owner)).username,
+          date: comment.date,
+          content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
+          replies: await this.getReplies(comment.id)
+        }
+      }))
+      : []
+  }
+
+  async getReplies (id) {
+    const comments = await this._commentRepository.findAllFromTarget(id)
+    return comments
+      ? await Promise.all(comments.map(async (comment) => {
+        return {
+          id: comment.id,
+          username: (await this._userRepository.findOneById(comment.owner)).username,
+          date: comment.date,
+          content: comment.is_deleted ? '**balasan telah dihapus**' : comment.content,
+          replies: await this.getReplies(comment.id)
+        }
+      }))
+      : []
   }
 
   _verifyPayload (payload) {
