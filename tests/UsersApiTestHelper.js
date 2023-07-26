@@ -1,14 +1,14 @@
-const container = require('../src/Infrastructures/container');
-const createServer = require('../src/Infrastructures/http/createServer');
+const container = require('../src/Infrastructures/container')
+const createServer = require('../src/Infrastructures/http/createServer')
 
 const UserApiTestHelper = {
-  async getAccessTokenFromUser({
+  async getAccessTokenFromUser ({
     username = 'dicoding',
     password = 'secret',
     fullname = 'Dicoding Indonesia'
   }) {
-    const server = await createServer(container);
-    
+    const server = await createServer(container)
+
     // Add user
     await server.inject({
       method: 'POST',
@@ -16,31 +16,31 @@ const UserApiTestHelper = {
       payload: {
         username,
         password,
-        fullname,
-      },
-    });
-    
+        fullname
+      }
+    })
+
     // Login user
     const loginResponse = await server.inject({
       method: 'POST',
       url: '/authentications',
       payload: {
         username,
-        password,
-      },
-    });
+        password
+      }
+    })
 
     const { data: { accessToken } } = JSON.parse(loginResponse.payload)
     return accessToken
   },
 
-  async registerUser({
+  async registerUser ({
     username = 'dicoding',
     password = 'secret',
     fullname = 'Dicoding Indonesia'
   }) {
-    const server = await createServer(container);
-    
+    const server = await createServer(container)
+
     // Add user
     await server.inject({
       method: 'POST',
@@ -48,9 +48,9 @@ const UserApiTestHelper = {
       payload: {
         username,
         password,
-        fullname,
-      },
-    });
+        fullname
+      }
+    })
   }
 }
 

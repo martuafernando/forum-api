@@ -203,7 +203,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
       })
 
       // Action & Assert
