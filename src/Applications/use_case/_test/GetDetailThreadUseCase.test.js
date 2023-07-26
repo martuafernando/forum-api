@@ -66,7 +66,7 @@ describe('GetDetailThreadUseCase', () => {
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
       .mockImplementation(() => Promise.resolve(savedThread))
-    mockCommentRepository.findAllFromThread = jest.fn()
+    mockCommentRepository.findAllFromTarget = jest.fn()
       .mockImplementation(() => Promise.resolve(savedComments))
     mockUserRepository.findOneById = jest.fn()
       .mockImplementation(() => Promise.resolve(registeredUser))
@@ -86,7 +86,7 @@ describe('GetDetailThreadUseCase', () => {
 
     expect(mockThreadRepository.findOneById)
       .toBeCalledWith(useCasePayload.id)
-    expect(mockCommentRepository.findAllFromThread)
+    expect(mockCommentRepository.findAllFromTarget)
       .toBeCalledWith(useCasePayload.id)
     expect(mockUserRepository.findOneById)
       .toBeCalledWith(registeredUser.id)

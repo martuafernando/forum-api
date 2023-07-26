@@ -41,7 +41,7 @@ describe('CommentRepositoryPostgres', () => {
       })
 
       // Action & Assert
-      return expect(commentRepositoryPostgres.createThreadComment(newComment, 'thread-123'))
+      expect(commentRepositoryPostgres.createThreadComment(newComment, 'thread-123'))
         .rejects
         .toThrowError(InvariantError)
     })
@@ -62,13 +62,86 @@ describe('CommentRepositoryPostgres', () => {
       })
 
       // Action
-      await commentRepositoryPostgres.createThreadComment(newComment, 'thread-123')
+      await commentRepositoryPostgres.createThreadComment(newComment)
 
       // Assert
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.content).toEqual(newComment.content)
       expect(comments.owner).toEqual(newComment.owner)
+    })
+  })
+
+  describe('createReplyComment function', () => {
+    beforeEach(async () => {
+      await CommentsTableTestHelper.createThreadComment({ id: 'comment-123' })
+    })
+
+    it('should persist new thread comment and return saved thread comment correctly', async () => {
+      // Arrange
+      const newComment = new NewComment({
+        content: 'comment-content',
+        owner: 'user-123',
+        target: 'comment-123'
+      })
+      const fakeIdGenerator = () => '234' // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        idGenerator: fakeIdGenerator,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
+      })
+
+      // Action
+      await commentRepositoryPostgres.createReplyComment(newComment)
+
+      // Assert
+      const comments = await CommentsTableTestHelper.findOneById('comment-234')
+      expect(comments).toBeInstanceOf(SavedComment)
+      expect(comments.content).toEqual(newComment.content)
+      expect(comments.owner).toEqual(newComment.owner)
+    })
+
+    it('should return NotFoundError when comment target not found ', async () => {
+      // Arrange
+      const newComment = new NewComment({
+        content: 'comment-content',
+        owner: 'user-123',
+        target: 'comment-xxx'
+      })
+      const fakeIdGenerator = () => '234' // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        idGenerator: fakeIdGenerator,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
+      })
+
+      // Action & Assert
+      expect(commentRepositoryPostgres.createReplyComment(newComment))
+        .rejects
+        .toThrowError(NotFoundError)
+    })
+
+    it('should return InvariantError when user not found', async () => {
+      // Arrange
+      const newComment = new NewComment({
+        content: 'comment-content',
+        owner: 'user-xxx',
+        target: 'comment-123'
+      })
+      const fakeIdGenerator = () => '234' // stub!
+      const commentRepositoryPostgres = new CommentRepositoryPostgres({
+        pool,
+        idGenerator: fakeIdGenerator,
+        userRepository: UsersTableTestHelper,
+        threadRepository: ThreadsTableTestHelper
+      })
+
+      // Action & Assert
+      expect(commentRepositoryPostgres.createReplyComment(newComment))
+        .rejects
+        .toThrowError(InvariantError)
     })
   })
 
@@ -80,13 +153,13 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.createThreadComment({ id: 'comment-2', owner: 'user-123' })
 
       // Assert & Assert
-      const comments = await commentRepositoryPostgres.findAllFromThread('thread-123')
+      const comments = await commentRepositoryPostgres.findAllFromTarget('thread-123')
       expect(comments).toHaveLength(2)
     })
   })
 
   describe('findOneById function', () => {
-    it('should return empty array when nothing comment with id found', async () => {
+    it('should return empty array when no comment with id found', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres({ pool })
 

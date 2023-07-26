@@ -7,7 +7,8 @@ describe('CommentsRepository interface', () => {
 
     // Action & Assert
     await expect(commentRepository.createThreadComment('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(commentRepository.findAllFromThread('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.createReplyComment('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.findAllFromTarget('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(commentRepository.findOneById('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(commentRepository.remove('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })

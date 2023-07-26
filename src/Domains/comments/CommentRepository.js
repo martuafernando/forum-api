@@ -3,7 +3,11 @@ class CommentRepository {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
-  async findAllFromThread (query) {
+  async createReplyComment (comment) {
+    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
+
+  async findAllFromTarget (query) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 

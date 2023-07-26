@@ -44,13 +44,39 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new SavedComment(result.rows[0])
   }
 
-  async findAllFromThread (threadId) {
+  async createReplyComment (newComment) {
+    const commentId = newComment.target
+    if (!await this.findOneById(commentId)) throw new NotFoundError('comment tidak ditemukan')
+    const { content, owner } = newComment
+    const currentDate = new Date().toISOString()
+
+    if (!await this._userRepositoryPostgres.findOneById(owner)) throw new InvariantError('user tidak ditemukan')
+
+    const id = `comment-${this._idGenerator()}`
+
+    const query = {
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner',
+      values: [id, content, currentDate, owner]
+    }
+
+    const result = await this._pool.query(query)
+
+    await this._pool.query({
+      text: `INSERT INTO link_thread_comment
+            VALUES($1, $2)`,
+      values: [commentId, id]
+    })
+
+    return new SavedComment(result.rows[0])
+  }
+
+  async findAllFromTarget (target) {
     const query = {
       text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
               INNER JOIN comments ON comments.id = comment_id
               WHERE (target_id = $1)
               ORDER BY date ASC`,
-      values: [threadId]
+      values: [target]
     }
     const result = await this._pool.query(query)
     return result?.rows

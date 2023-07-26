@@ -1,3 +1,4 @@
+const AddReplyCommentUseCase = require('../../../../Applications/use_case/AddReplyCommentUseCase')
 const AddThreadCommentUseCase = require('../../../../Applications/use_case/AddThreadCommentUseCase')
 const DeleteCommentUseCase = require('../../../../Applications/use_case/DeleteCommentUseCase')
 class ThreadsHandler {
@@ -6,6 +7,7 @@ class ThreadsHandler {
 
     this.postThreadCommentsHandler = this.postThreadCommentsHandler.bind(this)
     this.deleteThreadCommentsHandler = this.deleteThreadCommentsHandler.bind(this)
+    this.postRepliesCommentsHandler = this.postRepliesCommentsHandler.bind(this)
   }
 
   async postThreadCommentsHandler (request, h) {
@@ -37,6 +39,22 @@ class ThreadsHandler {
       status: 'success'
     })
     response.code(200)
+    return response
+  }
+
+  async postRepliesCommentsHandler (request, h) {
+    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
+    const { commentId, threadId } = request.params
+    const addReplyCommentUseCase = this._container.getInstance(AddReplyCommentUseCase.name)
+    const addedReply = await addReplyCommentUseCase.execute(accessToken, { threadId, target: commentId, ...request.payload })
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        addedReply
+      }
+    })
+    response.code(201)
     return response
   }
 }

@@ -13,22 +13,25 @@ class GetDetailThreadUseCase {
     this._verifyPayload(useCasePayload)
     const { id } = useCasePayload
     const thread = await this._threadRepository.findOneById(id)
-    const comments = await this._commentRepository.findAllFromThread(id)
     const user = await this._userRepository.findOneById(thread.owner)
     return await {
       ...thread,
       username: user.username,
-      comments: await Promise.all(comments.map(async (comment) => {
-        comment.username = (await this._userRepository.findOneById(comment.owner)).username
-        comment.content = comment.is_deleted ? '**komentar telah dihapus**' : comment.content
-        return {
-          id: comment.id,
-          username: comment.username,
-          date: comment.date,
-          content: comment.content
-        }
-      }))
+      comments: await this.getComment(id)
     }
+  }
+
+  async getComment (id) {
+    const comments = await this._commentRepository.findAllFromTarget(id)
+    return await Promise.all(comments.map(async (comment) => {
+      return {
+        id: comment.id,
+        username: (await this._userRepository.findOneById(comment.owner)).username,
+        date: comment.date,
+        content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
+        replies: await this.getComment(comment.id)
+      }
+    }))
   }
 
   _verifyPayload (payload) {
