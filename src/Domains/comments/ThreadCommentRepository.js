@@ -1,13 +1,9 @@
-class CommentRepository {
-  async createThreadComment (comment) {
+class ThreadCommentRepository {
+  async create (comment) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
-  async createReplyComment (comment) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-  }
-
-  async findAllFromTarget (query) {
+  async findAllFromThread (thread) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
@@ -20,4 +16,4 @@ class CommentRepository {
   }
 }
 
-module.exports = CommentRepository
+module.exports = ThreadCommentRepository

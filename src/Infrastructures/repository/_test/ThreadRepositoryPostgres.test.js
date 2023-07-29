@@ -86,7 +86,7 @@ describe('ThreadRepositoryPostgres', () => {
   })
 
   describe('findOneById function', () => {
-    it('should return empty array when nothing thread with threadId found', async () => {
+    it('should return NotFoundError when nothing thread with threadId found', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
@@ -94,35 +94,22 @@ describe('ThreadRepositoryPostgres', () => {
       })
 
       // Action & Assert
-      const threads = await threadRepositoryPostgres.findOneById('thread-1')
-      expect(threads).toBeUndefined()
+      expect(threadRepositoryPostgres.findOneById('thread-1'))
+        .rejects
+        .toThrowError(NotFoundError)
     })
 
     it('should return thread when there is thread with threadId found', async () => {
       // Arrange
-      const savedThread = new SavedThread({
-        id: 'thread-123',
-        title: 'thread-title',
-        body: 'thread-body',
-        owner: 'user-123',
-        date: '2021-08-08T07:19:09.775Z'
-      })
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
       })
 
-      // action
-      await ThreadsTableTestHelper.create(savedThread)
-      const threads = await threadRepositoryPostgres.findOneById('thread-123')
-
-      // Assert
-      expect(threads).toBeInstanceOf(SavedThread)
-      expect(threads.id).toEqual(savedThread.id)
-      expect(threads.title).toEqual(savedThread.title)
-      expect(threads.body).toEqual(savedThread.body)
-      expect(threads.date).toEqual(savedThread.date)
-      expect(threads.owner).toEqual(savedThread.owner)
+      // Action && Assert
+      expect(threadRepositoryPostgres.findOneById('thread-123'))
+        .rejects
+        .toThrowError(NotFoundError)
     })
   })
 

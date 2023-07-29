@@ -1,11 +1,13 @@
 class GetDetailThreadUseCase {
   constructor ({
     threadRepository,
-    commentRepository,
+    threadCommentRepository,
+    replyCommentRepository,
     userRepository
   }) {
     this._threadRepository = threadRepository
-    this._commentRepository = commentRepository
+    this._threadCommentRepository = threadCommentRepository
+    this._replyCommentRepository = replyCommentRepository
     this._userRepository = userRepository
   }
 
@@ -15,15 +17,18 @@ class GetDetailThreadUseCase {
     const thread = await this._threadRepository.findOneById(id)
     const user = await this._userRepository.findOneById(thread.owner)
     return await {
-      ...thread,
+      id: thread.id,
+      title: thread.title,
+      body: thread.body,
+      date: thread.date,
       username: user.username,
       comments: await this.getComment(id)
     }
   }
 
   async getComment (id) {
-    const comments = await this._commentRepository.findAllFromTarget(id)
-    return comments
+    const comments = await this._threadCommentRepository.findAllFromThread(id)
+    return comments.length > 0
       ? await Promise.all(comments.map(async (comment) => {
         return {
           id: comment.id,
@@ -37,8 +42,8 @@ class GetDetailThreadUseCase {
   }
 
   async getReplies (id) {
-    const comments = await this._commentRepository.findAllFromTarget(id)
-    return comments
+    const comments = await this._replyCommentRepository.findAllFromComment(id)
+    return comments.length > 0
       ? await Promise.all(comments.map(async (comment) => {
         return {
           id: comment.id,

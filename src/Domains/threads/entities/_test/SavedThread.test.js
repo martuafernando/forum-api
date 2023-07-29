@@ -32,7 +32,7 @@ describe('SavedThread entities', () => {
       title: 'title',
       body: 'body',
       date: 'date',
-      owner: 'userId'
+      owner: 'owner'
     }
 
     // Action

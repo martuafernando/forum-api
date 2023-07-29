@@ -1,29 +1,13 @@
-const NewComment = require('../../Domains/comments/entities/NewComment')
+const NewThreadComment = require('../../Domains/comments/entities/NewThreadComment')
 
 class AddThreadCommentUseCase {
-  constructor ({ commentRepository, authenticationTokenManager }) {
-    this._commentRepository = commentRepository
-    this._authenticationTokenManager = authenticationTokenManager
+  constructor ({ threadCommentRepository }) {
+    this._threadCommentRepository = threadCommentRepository
   }
 
-  async execute (accessToken, useCasePayload) {
-    this._validatePayload(accessToken)
-    const { id } = await this._authenticationTokenManager.decodePayload(accessToken)
-    const newComment = new NewComment({
-      owner: id,
-      ...useCasePayload
-    })
-    return this._commentRepository.createThreadComment(newComment)
-  }
-
-  _validatePayload (accessToken) {
-    if (!accessToken) {
-      throw new Error('ADD_THREAD_COMMENT_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN')
-    }
-
-    if (typeof accessToken !== 'string') {
-      throw new Error('ADD_THREAD_COMMENT_USE_CASE.ACCESS_TOKEN_NOT_MEET_DATA_TYPE_SPECIFICATION')
-    }
+  async execute (useCasePayload) {
+    const newThreadComment = new NewThreadComment(useCasePayload)
+    return this._threadCommentRepository.create(newThreadComment)
   }
 }
 

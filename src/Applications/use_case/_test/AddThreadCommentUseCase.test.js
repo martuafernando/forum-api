@@ -1,8 +1,8 @@
-const NewComment = require('../../../Domains/comments/entities/NewComment')
+const NewThreadComment = require('../../../Domains/comments/entities/NewThreadComment')
 const SavedComment = require('../../../Domains/comments/entities/SavedComment')
-const CommentRepository = require('../../../Domains/comments/CommentRepository')
+
 const AddThreadCommentUseCase = require('../AddThreadCommentUseCase')
-const AuthenticationTokenManager = require('../../security/AuthenticationTokenManager')
+const ThreadCommentRepository = require('../../../Domains/comments/ReplyCommentRepository')
 
 describe('AddThreadCommentUseCase', () => {
   /**
@@ -12,52 +12,42 @@ describe('AddThreadCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       content: 'comment content',
-      date: '2021-08-08T07:19:09.775Z',
-      target: 'target-123',
+      threadId: 'thread-123',
       owner: 'user-123'
     }
 
     const mockSavedComment = new SavedComment({
-      id: 'comment-id',
-      content: 'comment content',
+      id: 'thread-123',
+      content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
-      target: 'thread-123',
       owner: useCasePayload.owner
     })
 
     /** creating dependency of use case */
-    const mockCommentRepository = new CommentRepository()
-    const mockauthenticationTokenManager = new AuthenticationTokenManager()
+    const mockThreadCommentRepository = new ThreadCommentRepository()
 
     /** mocking needed function */
-    mockCommentRepository.createThreadComment = jest.fn()
+    mockThreadCommentRepository.create = jest.fn()
       .mockImplementation(() => Promise.resolve(mockSavedComment))
-    mockauthenticationTokenManager.decodePayload = jest.fn()
-      .mockImplementation(() => Promise.resolve({ username: 'dicoding', id: 'user-123' }))
 
     /** creating use case instance */
-    const getCommentUseCase = new AddThreadCommentUseCase({
-      commentRepository: mockCommentRepository,
-      authenticationTokenManager: mockauthenticationTokenManager
+    const addThreadCommentUseCase = new AddThreadCommentUseCase({
+      threadCommentRepository: mockThreadCommentRepository
     })
 
     // Action
-    const savedComment = await getCommentUseCase.execute('access-token', useCasePayload)
+    const savedComment = await addThreadCommentUseCase.execute(useCasePayload)
 
     // Assert
     expect(savedComment).toStrictEqual(new SavedComment({
-      id: 'comment-id',
+      id: 'thread-123',
       content: useCasePayload.content,
-      date: useCasePayload.date,
-      target: useCasePayload.target,
+      date: '2021-08-08T07:19:09.775Z',
+      threadId: useCasePayload.target,
       owner: useCasePayload.owner
     }))
 
-    expect(mockCommentRepository.createThreadComment)
-      .toBeCalledWith(new NewComment({
-        content: useCasePayload.content,
-        target: useCasePayload.target,
-        owner: useCasePayload.owner
-      }))
+    expect(mockThreadCommentRepository.create)
+      .toBeCalledWith(new NewThreadComment(useCasePayload))
   })
 })

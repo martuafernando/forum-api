@@ -8,6 +8,8 @@ const DomainErrorTranslator = {
 }
 
 DomainErrorTranslator._directories = {
+  'REQUEST.NOT_CONTAIN_ACCESS_TOKEN': new AuthenticationError('Missing authentication'),
+
   // User
   'REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'),
   'REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat user baru karena tipe data tidak sesuai'),
@@ -25,19 +27,21 @@ DomainErrorTranslator._directories = {
   // Thread
   'NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada'),
   'NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'),
-  'ADD_THREAD_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN': new AuthenticationError('Missing authentication'),
 
   'GET_DETAIL_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID': new InvariantError('tidak dapat mengambil thread karena properti yang dibutuhkan tidak ada'),
   'GET_DETAIL_THREAD_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat mengambil thread karena tipe data tidak sesuai'),
 
   // Comment
-  'NEW_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada'),
-  'NEW_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat comment baru karena tipe data tidak sesuai'),
-  'ADD_THREAD_COMMENT_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN': new AuthenticationError('Missing authentication'),
+  'NEW_THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada'),
+  'NEW_THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat comment baru karena tipe data tidak sesuai'),
 
-  'DELETE_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus comment karena properti yang dibutuhkan tidak ada'),
-  'DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'),
-  'DELETE_COMMENT_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN': new AuthenticationError('Missing authentication')
+  'NEW_REPLY_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat balasan comment baru karena properti yang dibutuhkan tidak ada'),
+  'NEW_REPLY_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat balasan comment baru karena tipe data tidak sesuai'),
+
+  'DELETE_THREAD_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus comment karena properti yang dibutuhkan tidak ada'),
+  'DELETE_THREAD_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'),
+  'DELETE_REPLY_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus balasan comment karena properti yang dibutuhkan tidak ada'),
+  'DELETE_REPLY_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus balasan comment karena tipe data tidak sesuai')
 }
 
 module.exports = DomainErrorTranslator

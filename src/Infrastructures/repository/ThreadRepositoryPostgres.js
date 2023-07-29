@@ -50,7 +50,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     }
 
     const result = await this._pool.query(query)
-    return result.rows?.[0] ? new SavedThread(result.rows?.[0]) : undefined
+    if (!result.rowCount) throw new NotFoundError('thread tidak ditemukan')
+    return new SavedThread(result.rows?.[0])
   }
 
   async remove (threadId, ownerId) {

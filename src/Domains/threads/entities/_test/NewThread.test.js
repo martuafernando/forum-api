@@ -28,7 +28,7 @@ describe('NewThread entities', () => {
     const payload = {
       title: 'title',
       body: 'body',
-      owner: 'userId'
+      owner: 'owner'
     }
 
     // Action

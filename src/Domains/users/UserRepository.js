@@ -15,7 +15,7 @@ class UserRepository {
     throw new Error('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 
-  async findOneById (userId) {
+  async findOneById (owner) {
     throw new Error('USER_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
 }

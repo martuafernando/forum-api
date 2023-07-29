@@ -116,10 +116,10 @@ describe('UserRepositoryPostgres', () => {
       const userRepositoryPostgres = new UserRepositoryPostgres(pool, {})
 
       // Action
-      const userId = await userRepositoryPostgres.getIdByUsername('dicoding')
+      const owner = await userRepositoryPostgres.getIdByUsername('dicoding')
 
       // Assert
-      expect(userId).toEqual('user-321')
+      expect(owner).toEqual('user-321')
     })
   })
 

@@ -4,6 +4,9 @@ const InvariantError = require('../InvariantError')
 
 describe('DomainErrorTranslator', () => {
   it('should translate error correctly', () => {
+    expect(DomainErrorTranslator.translate(new Error('REQUEST.NOT_CONTAIN_ACCESS_TOKEN')))
+      .toStrictEqual(new AuthenticationError('Missing authentication'))
+
     expect(DomainErrorTranslator.translate(new Error('REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY')))
       .toStrictEqual(new InvariantError('tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'))
     expect(DomainErrorTranslator.translate(new Error('REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION')))
@@ -32,8 +35,6 @@ describe('DomainErrorTranslator', () => {
       .toStrictEqual(new InvariantError('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada'))
     expect(DomainErrorTranslator.translate(new Error('NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')))
       .toStrictEqual(new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'))
-    expect(DomainErrorTranslator.translate(new Error('ADD_THREAD_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN')))
-      .toStrictEqual(new AuthenticationError('Missing authentication'))
 
     expect(DomainErrorTranslator.translate(new Error('GET_DETAIL_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID')))
       .toStrictEqual(new InvariantError('tidak dapat mengambil thread karena properti yang dibutuhkan tidak ada'))
@@ -41,19 +42,19 @@ describe('DomainErrorTranslator', () => {
       .toStrictEqual(new InvariantError('tidak dapat mengambil thread karena tipe data tidak sesuai'))
 
     // Comment
-    expect(DomainErrorTranslator.translate(new Error('NEW_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')))
+    expect(DomainErrorTranslator.translate(new Error('NEW_THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')))
       .toStrictEqual(new InvariantError('tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada'))
-    expect(DomainErrorTranslator.translate(new Error('NEW_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')))
+    expect(DomainErrorTranslator.translate(new Error('NEW_THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')))
       .toStrictEqual(new InvariantError('tidak dapat membuat comment baru karena tipe data tidak sesuai'))
-    expect(DomainErrorTranslator.translate(new Error('ADD_THREAD_COMMENT_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN')))
-      .toStrictEqual(new AuthenticationError('Missing authentication'))
 
-    expect(DomainErrorTranslator.translate(new Error('DELETE_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY')))
+    expect(DomainErrorTranslator.translate(new Error('DELETE_THREAD_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY')))
       .toStrictEqual(new InvariantError('tidak dapat menghapus comment karena properti yang dibutuhkan tidak ada'))
-    expect(DomainErrorTranslator.translate(new Error('DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION')))
+    expect(DomainErrorTranslator.translate(new Error('DELETE_THREAD_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION')))
       .toStrictEqual(new InvariantError('tidak dapat menghapus comment karena tipe data tidak sesuai'))
-    expect(DomainErrorTranslator.translate(new Error('DELETE_COMMENT_USE_CASE.NOT_CONTAIN_ACCESS_TOKEN')))
-      .toStrictEqual(new AuthenticationError('Missing authentication'))
+    expect(DomainErrorTranslator.translate(new Error('DELETE_REPLY_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY')))
+      .toStrictEqual(new InvariantError('tidak dapat menghapus balasan comment karena properti yang dibutuhkan tidak ada'))
+    expect(DomainErrorTranslator.translate(new Error('DELETE_REPLY_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION')))
+      .toStrictEqual(new InvariantError('tidak dapat menghapus balasan comment karena tipe data tidak sesuai'))
   })
 
   it('should return original error when error message is not needed to translate', () => {

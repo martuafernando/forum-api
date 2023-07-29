@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
 
 exports.up = (pgm) => {
-  pgm.createTable('link_thread_comment', {
-    thread_id: {
+  pgm.createTable('link_reply_comment', {
+    comment_id: {
       type: 'VARCHAR(50)',
       notNull: true
     },
-    comment_id: {
+    reply_id: {
       type: 'VARCHAR(50)',
       notNull: true
     }
@@ -14,5 +14,5 @@ exports.up = (pgm) => {
 }
 
 exports.down = (pgm) => {
-  pgm.dropTable('link_thread_comment')
+  pgm.dropTable('link_reply_comment')
 }

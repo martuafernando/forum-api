@@ -1,6 +1,9 @@
 const AddReplyCommentUseCase = require('../../../../Applications/use_case/AddReplyCommentUseCase')
 const AddThreadCommentUseCase = require('../../../../Applications/use_case/AddThreadCommentUseCase')
-const DeleteCommentUseCase = require('../../../../Applications/use_case/DeleteCommentUseCase')
+const DeleteThreadCommentUseCase = require('../../../../Applications/use_case/DeleteThreadCommentUseCase')
+const DeleteReplyCommentUseCase = require('../../../../Applications/use_case/DeleteReplyCommentUseCase')
+const AuthenticationTokenManager = require('../../../../Applications/security/AuthenticationTokenManager')
+
 class ThreadsHandler {
   constructor (container) {
     this._container = container
@@ -12,10 +15,11 @@ class ThreadsHandler {
   }
 
   async postThreadCommentsHandler (request, h) {
-    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
+    const owner = await this._getCurrentUserFromAuthorizationToken(request)
+
     const { threadId } = request.params
     const addCommentThreadUseCase = this._container.getInstance(AddThreadCommentUseCase.name)
-    const addedCommentThread = await addCommentThreadUseCase.execute(accessToken, { target: threadId, ...request.payload })
+    const addedCommentThread = await addCommentThreadUseCase.execute({ threadId, owner, ...request.payload })
 
     const response = h.response({
       status: 'success',
@@ -28,12 +32,14 @@ class ThreadsHandler {
   }
 
   async deleteThreadCommentsHandler (request, h) {
-    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
-    const { threadId: target, commentId: id } = request.params
-    const deleteThreadCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name)
-    await deleteThreadCommentUseCase.execute(accessToken, {
-      id,
-      target
+    const owner = await this._getCurrentUserFromAuthorizationToken(request)
+
+    const { threadId, commentId } = request.params
+    const deleteThreadCommentUseCase = this._container.getInstance(DeleteThreadCommentUseCase.name)
+    await deleteThreadCommentUseCase.execute({
+      id: commentId,
+      threadId,
+      owner
     })
 
     const response = h.response({
@@ -44,10 +50,15 @@ class ThreadsHandler {
   }
 
   async postRepliesCommentsHandler (request, h) {
-    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
+    const owner = await this._getCurrentUserFromAuthorizationToken(request)
     const { commentId, threadId } = request.params
     const addReplyCommentUseCase = this._container.getInstance(AddReplyCommentUseCase.name)
-    const addedReply = await addReplyCommentUseCase.execute(accessToken, { threadId, target: commentId, ...request.payload })
+    const addedReply = await addReplyCommentUseCase.execute({
+      owner,
+      threadId,
+      commentId,
+      ...request.payload
+    })
 
     const response = h.response({
       status: 'success',
@@ -60,12 +71,13 @@ class ThreadsHandler {
   }
 
   async deleteRepliesCommentsHandler (request, h) {
-    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
-    const { commentId: target, replyId: id } = request.params
-    const deleteThreadCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name)
-    await deleteThreadCommentUseCase.execute(accessToken, {
+    const owner = await this._getCurrentUserFromAuthorizationToken(request)
+    const { commentId, replyId: id } = request.params
+    const deletereplyCommentUseCase = this._container.getInstance(DeleteReplyCommentUseCase.name)
+    await deletereplyCommentUseCase.execute({
       id,
-      target
+      commentId,
+      owner
     })
 
     const response = h.response({
@@ -73,6 +85,14 @@ class ThreadsHandler {
     })
     response.code(200)
     return response
+  }
+
+  async _getCurrentUserFromAuthorizationToken (request) {
+    const accessToken = request.headers.authorization?.match(/(?<=Bearer ).+/)?.[0]
+    if (!accessToken) throw Error('REQUEST.NOT_CONTAIN_ACCESS_TOKEN')
+    const authenticationTokenManager = this._container.getInstance(AuthenticationTokenManager.name)
+    const { id } = await authenticationTokenManager.decodePayload(accessToken)
+    return id
   }
 }
 

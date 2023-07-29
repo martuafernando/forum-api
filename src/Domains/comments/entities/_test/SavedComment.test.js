@@ -34,12 +34,12 @@ describe('SavedComment entities', () => {
     }
 
     // Action
-    const savedComment = new SavedComment(payload)
+    const savedThreadComment = new SavedComment(payload)
 
     // Assert
-    expect(savedComment).toBeInstanceOf(SavedComment)
-    expect(savedComment.id).toEqual(payload.id)
-    expect(savedComment.content).toEqual(payload.content)
-    expect(savedComment.owner).toEqual(payload.owner)
+    expect(savedThreadComment).toBeInstanceOf(SavedComment)
+    expect(savedThreadComment.id).toEqual(payload.id)
+    expect(savedThreadComment.content).toEqual(payload.content)
+    expect(savedThreadComment.owner).toEqual(payload.owner)
   })
 })
