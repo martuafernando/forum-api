@@ -4,7 +4,6 @@ const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper
 const pool = require('../../database/postgres/pool')
 const ReplyCommentRepositoryPostgres = require('../ReplyCommentRepositoryPostgres')
 const SavedComment = require('../../../Domains/comments/entities/SavedComment')
-const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 
