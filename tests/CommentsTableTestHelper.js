@@ -62,6 +62,18 @@ const CommentsTableTestHelper = {
     return result.rows
   },
 
+  async findAllReplies (commentId) {
+    const query = {
+      text: `SELECT * FROM link_reply_comment
+            INNER JOIN comments ON comments.id = reply_id
+            WHERE (comment_id = $1)`,
+      values: [commentId]
+    }
+
+    const result = await pool.query(query)
+    return result.rows
+  },
+
   async cleanTable () {
     await pool.query('DELETE FROM link_thread_comment WHERE 1=1')
     await pool.query('DELETE FROM link_reply_comment WHERE 1=1')

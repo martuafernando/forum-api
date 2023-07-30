@@ -18,6 +18,15 @@ const ThreadsTableTestHelper = {
     await pool.query(query)
   },
 
+  async findAll () {
+    const query = {
+      text: 'SELECT * FROM threads'
+    }
+
+    const result = await pool.query(query)
+    return result.rows
+  },
+
   async findOneById (id) {
     const query = {
       text: 'SELECT * FROM threads WHERE (id = $1) AND (is_deleted = false)',
