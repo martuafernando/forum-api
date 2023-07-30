@@ -16,9 +16,9 @@ describe('/users endpoint', () => {
     it('should response 201 and persisted user', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding',
+        username: 'username',
         password: 'secret',
-        fullname: 'Dicoding Indonesia'
+        fullname: 'FullName'
       }
       // eslint-disable-next-line no-undef
       const server = await createServer(container)
@@ -40,7 +40,7 @@ describe('/users endpoint', () => {
     it('should response 400 when request payload not contain needed property', async () => {
       // Arrange
       const requestPayload = {
-        fullname: 'Dicoding Indonesia',
+        fullname: 'FullName',
         password: 'secret'
       }
       const server = await createServer(container)
@@ -62,9 +62,9 @@ describe('/users endpoint', () => {
     it('should response 400 when request payload not meet data type specification', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding',
+        username: 'username',
         password: 'secret',
-        fullname: ['Dicoding Indonesia']
+        fullname: ['FullName']
       }
       const server = await createServer(container)
 
@@ -87,7 +87,7 @@ describe('/users endpoint', () => {
       const requestPayload = {
         username: 'dicodingindonesiadicodingindonesiadicodingindonesiadicoding',
         password: 'secret',
-        fullname: 'Dicoding Indonesia'
+        fullname: 'FullName'
       }
       const server = await createServer(container)
 
@@ -108,9 +108,9 @@ describe('/users endpoint', () => {
     it('should response 400 when username contain restricted character', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding indonesia',
+        username: 'wrong username',
         password: 'secret',
-        fullname: 'Dicoding Indonesia'
+        fullname: 'FullName'
       }
       const server = await createServer(container)
 
@@ -130,10 +130,10 @@ describe('/users endpoint', () => {
 
     it('should response 400 when username unavailable', async () => {
       // Arrange
-      await UsersTableTestHelper.addUser({ username: 'dicoding' })
+      await UsersTableTestHelper.addUser({ username: 'username' })
       const requestPayload = {
-        username: 'dicoding',
-        fullname: 'Dicoding Indonesia',
+        username: 'username',
+        fullname: 'FullName',
         password: 'super_secret'
       }
       const server = await createServer(container)

@@ -9,12 +9,12 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 describe('/threads/{threadId}/comments endpoint', () => {
   beforeEach(async () => {
     await UserApiTestHelper.registerUser({
-      username: 'dicoding',
+      username: 'username',
       password: 'secret'
     })
     await ThreadsTableTestHelper.create({
       id: 'thread-123',
-      owner: await UsersTableTestHelper.getIdByUsername('dicoding')
+      owner: await UsersTableTestHelper.getIdByUsername('username')
     })
   })
 
@@ -118,6 +118,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
         payload: requestPayload
       })
 
+      console.log('testing::', response.payload)
       // Assert
       const responseJson = JSON.parse(response.payload)
       expect(response.statusCode).toEqual(201)
@@ -129,7 +130,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
     beforeEach(async () => {
       await CommentsTableTestHelper.createThreadComment({
         id: 'comment-123',
-        owner: await UsersTableTestHelper.getIdByUsername('dicoding')
+        owner: await UsersTableTestHelper.getIdByUsername('username')
       })
     })
 

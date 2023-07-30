@@ -1,5 +1,7 @@
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
+const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
+const UserRepository = require('../../../Domains/users/UserRepository')
 const AddThreadUseCase = require('../AddThreadUseCase')
 
 describe('AddThreadUseCase', () => {
@@ -22,16 +24,26 @@ describe('AddThreadUseCase', () => {
       owner: useCasePayload.owner
     })
 
+    const mockRegisteredUser = new RegisteredUser({
+      id: 'user-123',
+      username: 'username',
+      fullname: 'FullName'
+    })
+
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository()
+    const mockUserRepository = new UserRepository()
 
     /** mocking needed function */
     mockThreadRepository.create = jest.fn()
       .mockImplementation(() => Promise.resolve(mockSavedThread))
+    mockUserRepository.findOneById = jest.fn()
+      .mockImplementation(() => Promise.resolve(mockRegisteredUser))
 
     /** creating use case instance */
     const addThreadUseCase = new AddThreadUseCase({
-      threadRepository: mockThreadRepository
+      threadRepository: mockThreadRepository,
+      userRepository: mockUserRepository
     })
 
     // Action

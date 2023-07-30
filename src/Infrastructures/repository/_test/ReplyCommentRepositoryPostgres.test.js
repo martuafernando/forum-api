@@ -30,53 +30,6 @@ describe('ReplyCommentRepositoryPostgres', () => {
   })
 
   describe('create function', () => {
-    it('should throw InvariantError when user not found', async () => {
-      // Arrange
-      const useCasePayload = {
-        content: 'comment-content',
-        owner: 'user-xxx',
-        threadId: 'thread-123',
-        commentId: 'comment-123'
-      }
-      const fakeIdGenerator = () => '123' // stub!
-
-      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool,
-        idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
-      })
-
-      // Action & Assert
-      expect(replyCommentRepositoryPostgres.create(useCasePayload))
-        .rejects
-        .toThrowError(InvariantError)
-    })
-
-    it('should throw NotFoundError when thread not found', () => {
-      // Arrange
-      const useCasePayload = {
-        content: 'comment-content',
-        owner: 'user-xxx',
-        threadId: 'thread-xxx',
-        commentId: 'comment-123'
-      }
-      const fakeIdGenerator = () => '123' // stub!
-      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool,
-        idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
-      })
-
-      // Action & Assert
-      expect(replyCommentRepositoryPostgres.create(useCasePayload))
-        .rejects
-        .toThrowError(NotFoundError)
-    })
-
     it('should persist new thread comment and return saved thread comment correctly', async () => {
       // Arrange
       const useCasePayload = {
@@ -88,10 +41,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       const fakeIdGenerator = () => '234' // stub!
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
         pool,
-        idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
+        idGenerator: fakeIdGenerator
       })
 
       // Action
@@ -172,26 +122,6 @@ describe('ReplyCommentRepositoryPostgres', () => {
   })
 
   describe('remove function', () => {
-    it('should throw InvariantError when target comment not found', async () => {
-      // Arrange
-      const useCasePayload = {
-        id: 'comment-123',
-        target: 'comment-xxx',
-        owner: 'user-123'
-      }
-      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
-      })
-
-      // Action & Assert
-      expect(replyCommentRepositoryPostgres.remove(useCasePayload))
-        .rejects
-        .toThrowError(NotFoundError)
-    })
-
     it('should throw AuthorizationError when user is not the owner', async () => {
       // Arrange
       const useCasePayload = {
@@ -200,10 +130,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         owner: 'user-123'
       }
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
+        pool
       })
       await CommentsTableTestHelper.createReplyComment({
         id: 'comment-234',
@@ -221,14 +148,25 @@ describe('ReplyCommentRepositoryPostgres', () => {
         .toThrowError(AuthorizationError)
     })
 
+    it('should throw NotFoundError when target comment not found', async () => {
+      // Arrange
+      const useCasePayload = {
+        id: 'comment-xxx',
+        owner: 'user-123'
+      }
+      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+
+      // Action & Assert
+      expect(replyCommentRepositoryPostgres.remove(useCasePayload))
+        .rejects
+        .toThrowError(NotFoundError)
+    })
+
     it('should delete comment from database', async () => {
       // Arrange
 
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper,
-        threadRepository: ThreadsTableTestHelper,
-        threadCommentRepository: CommentsTableTestHelper
+        pool
       })
       await CommentsTableTestHelper.createReplyComment({
         id: 'comment-234',

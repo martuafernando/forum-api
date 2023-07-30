@@ -19,7 +19,7 @@ describe('/authentications endpoint', () => {
     it('should response 201 and new authentication', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding',
+        username: 'username',
         password: 'secret'
       }
       const server = await createServer(container)
@@ -28,9 +28,9 @@ describe('/authentications endpoint', () => {
         method: 'POST',
         url: '/users',
         payload: {
-          username: 'dicoding',
+          username: 'username',
           password: 'secret',
-          fullname: 'Dicoding Indonesia'
+          fullname: 'FullName'
         }
       })
 
@@ -52,7 +52,7 @@ describe('/authentications endpoint', () => {
     it('should response 400 if username not found', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding',
+        username: 'username',
         password: 'secret'
       }
       const server = await createServer(container)
@@ -74,7 +74,7 @@ describe('/authentications endpoint', () => {
     it('should response 401 if password wrong', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding',
+        username: 'username',
         password: 'wrong_password'
       }
       const server = await createServer(container)
@@ -83,9 +83,9 @@ describe('/authentications endpoint', () => {
         method: 'POST',
         url: '/users',
         payload: {
-          username: 'dicoding',
+          username: 'username',
           password: 'secret',
-          fullname: 'Dicoding Indonesia'
+          fullname: 'FullName'
         }
       })
 
@@ -106,7 +106,7 @@ describe('/authentications endpoint', () => {
     it('should response 400 if login payload not contain needed property', async () => {
       // Arrange
       const requestPayload = {
-        username: 'dicoding'
+        username: 'username'
       }
       const server = await createServer(container)
 
@@ -156,9 +156,9 @@ describe('/authentications endpoint', () => {
         method: 'POST',
         url: '/users',
         payload: {
-          username: 'dicoding',
+          username: 'username',
           password: 'secret',
-          fullname: 'Dicoding Indonesia'
+          fullname: 'FullName'
         }
       })
       // login user
@@ -166,7 +166,7 @@ describe('/authentications endpoint', () => {
         method: 'POST',
         url: '/authentications',
         payload: {
-          username: 'dicoding',
+          username: 'username',
           password: 'secret'
         }
       })
@@ -246,7 +246,7 @@ describe('/authentications endpoint', () => {
     it('should return 400 if refresh token not registered in database', async () => {
       // Arrange
       const server = await createServer(container)
-      const refreshToken = await container.getInstance(AuthenticationTokenManager.name).createRefreshToken({ username: 'dicoding' })
+      const refreshToken = await container.getInstance(AuthenticationTokenManager.name).createRefreshToken({ username: 'username' })
 
       // Action
       const response = await server.inject({

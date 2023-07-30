@@ -1,5 +1,4 @@
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
-const InvariantError = require('../../Commons/exceptions/InvariantError')
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
 const SavedThread = require('../../Domains/threads/entities/SavedThread')
 const ThreadRepository = require('../../Domains/threads/ThreadRepository')
@@ -7,20 +6,16 @@ const ThreadRepository = require('../../Domains/threads/ThreadRepository')
 class ThreadRepositoryPostgres extends ThreadRepository {
   constructor ({
     pool,
-    idGenerator,
-    userRepository
+    idGenerator
   }) {
     super()
     this._pool = pool
     this._idGenerator = idGenerator
-    this._userRepositoryPostgres = userRepository
   }
 
   async create (newThread) {
     const { title, body, owner } = newThread
     const currentDate = new Date().toISOString()
-
-    if (!await this._userRepositoryPostgres.findOneById(owner)) throw new InvariantError('user tidak ditemukan')
 
     const id = `thread-${this._idGenerator()}`
 
@@ -34,7 +29,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return new SavedThread(result.rows[0])
   }
 
-  async findAll (customQuery) {
+  async findAll () {
     const query = {
       text: 'SELECT * FROM threads WHERE is_deleted = false'
     }

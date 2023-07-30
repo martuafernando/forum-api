@@ -1,4 +1,6 @@
 const ReplyCommentRepository = require('../../../Domains/comments/ReplyCommentRepository')
+const ThreadCommentRepository = require('../../../Domains/comments/ThreadCommentRepository')
+const UserRepository = require('../../../Domains/users/UserRepository')
 const DeleteReplyCommentUseCase = require('../DeleteReplyCommentUseCase')
 
 describe('DeleteThreadCommentUseCase', () => {
@@ -35,21 +37,29 @@ describe('DeleteThreadCommentUseCase', () => {
       id: 'comment-id',
       owner: 'user123'
     }
-    const mockCommentRepository = new ReplyCommentRepository()
+    const mockReplyCommentRepository = new ReplyCommentRepository()
+    const mockUserRepository = new UserRepository()
+    const mockthreadCommentRepository = new ThreadCommentRepository()
 
     // mocking
-    mockCommentRepository.remove = jest.fn()
+    mockReplyCommentRepository.remove = jest.fn()
+      .mockImplementation(() => Promise.resolve())
+    mockUserRepository.findOneById = jest.fn()
+      .mockImplementation(() => Promise.resolve())
+    mockthreadCommentRepository.findOneById = jest.fn()
       .mockImplementation(() => Promise.resolve())
 
     const deleteCommentUseCase = new DeleteReplyCommentUseCase({
-      replyCommentRepository: mockCommentRepository
+      replyCommentRepository: mockReplyCommentRepository,
+      threadCommentRepository: mockthreadCommentRepository,
+      userRepository: mockUserRepository
     })
 
     // Act
     await deleteCommentUseCase.execute(useCasePayload)
 
     // Assert
-    expect(mockCommentRepository.remove)
+    expect(mockReplyCommentRepository.remove)
       .toHaveBeenCalledWith(useCasePayload)
   })
 })

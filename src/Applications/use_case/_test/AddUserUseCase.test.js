@@ -11,9 +11,9 @@ describe('AddUserUseCase', () => {
   it('should orchestrating the add user action correctly', async () => {
     // Arrange
     const useCasePayload = {
-      username: 'dicoding',
+      username: 'username',
       password: 'secret',
-      fullname: 'Dicoding Indonesia'
+      fullname: 'FullName'
     }
 
     const mockRegisteredUser = new RegisteredUser({

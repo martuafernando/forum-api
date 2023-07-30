@@ -3,9 +3,9 @@ const createServer = require('../src/Infrastructures/http/createServer')
 
 const UserApiTestHelper = {
   async getAccessTokenFromUser ({
-    username = 'dicoding',
+    username = 'username',
     password = 'secret',
-    fullname = 'Dicoding Indonesia'
+    fullname = 'FullName'
   }) {
     const server = await createServer(container)
 
@@ -35,9 +35,9 @@ const UserApiTestHelper = {
   },
 
   async registerUser ({
-    username = 'dicoding',
+    username = 'username',
     password = 'secret',
-    fullname = 'Dicoding Indonesia'
+    fullname = 'FullName'
   }) {
     const server = await createServer(container)
 

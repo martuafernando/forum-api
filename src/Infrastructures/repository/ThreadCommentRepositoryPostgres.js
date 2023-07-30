@@ -1,30 +1,23 @@
-const InvariantError = require('../../Commons/exceptions/InvariantError')
 const SavedComment = require('../../Domains/comments/entities/SavedComment')
 const ThreadCommentRepository = require('../../Domains/comments/ThreadCommentRepository')
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
+const NewThreadComment = require('../../Domains/comments/entities/NewThreadComment')
 
 class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
   constructor ({
     pool,
-    idGenerator,
-    threadRepository,
-    userRepository
+    idGenerator
   }) {
     super()
     this._pool = pool
     this._idGenerator = idGenerator
-    this._userRepositoryPostgres = userRepository
-    this._threadRepositoryPostgres = threadRepository
   }
 
-  async create (newThreadComment) {
-    const { threadId } = newThreadComment
-    if (!await this._threadRepositoryPostgres.findOneById(threadId)) throw new NotFoundError('thread tidak ditemukan')
-    const { content, owner } = newThreadComment
+  async create (useCasePayload) {
+    const newThreadComment = new NewThreadComment(useCasePayload)
+    const { threadId, content, owner } = newThreadComment
     const currentDate = new Date().toISOString()
-
-    if (!await this._userRepositoryPostgres.findOneById(owner)) throw new InvariantError('user tidak ditemukan')
 
     const id = `comment-${this._idGenerator()}`
 
@@ -69,10 +62,6 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
 
   async remove ({ id, threadId, owner }) {
     const comment = await this.findOneById(id)
-    const thread = await this._threadRepositoryPostgres.findOneById(threadId)
-
-    if (!thread) throw new NotFoundError('thread tidak ditemukan')
-    if (!comment) throw new NotFoundError('comment tidak ditemukan')
     if (comment.owner !== owner) throw new AuthorizationError('Forbidden')
 
     await this._pool.query({

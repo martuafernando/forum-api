@@ -4,7 +4,6 @@ const pool = require('../../database/postgres/pool')
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres')
 const NewThread = require('../../../Domains/threads/entities/NewThread')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
-const InvariantError = require('../../../Commons/exceptions/InvariantError')
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 
@@ -23,26 +22,6 @@ describe('ThreadRepositoryPostgres', () => {
   })
 
   describe('create function', () => {
-    it('should throw InvariantError when user not found', () => {
-      // Arrange
-      const newThread = new NewThread({
-        title: 'thread-title',
-        body: 'thread-body',
-        owner: 'user-xxx'
-      })
-      const fakeIdGenerator = () => '123' // stub!
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        idGenerator: fakeIdGenerator,
-        userRepository: UsersTableTestHelper
-      })
-
-      // Action & Assert
-      return expect(threadRepositoryPostgres.create(newThread))
-        .rejects
-        .toThrowError(InvariantError)
-    })
-
     it('should persist new thread and return saved thread correctly', async () => {
       // Arrange
       const newThread = new NewThread({

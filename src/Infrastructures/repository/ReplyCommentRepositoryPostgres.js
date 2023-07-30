@@ -1,30 +1,22 @@
-const InvariantError = require('../../Commons/exceptions/InvariantError')
 const SavedComment = require('../../Domains/comments/entities/SavedComment')
 const ReplyCommentRepository = require('../../Domains/comments/ReplyCommentRepository')
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
+const NewReplyComment = require('../../Domains/comments/entities/NewReplyComment')
 
 class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
   constructor ({
     pool,
-    idGenerator,
-    threadRepository,
-    userRepository,
-    threadCommentRepository
+    idGenerator
   }) {
     super()
     this._pool = pool
     this._idGenerator = idGenerator
-    this._userRepository = userRepository
-    this._threadRepository = threadRepository
-    this._threadCommentRepository = threadCommentRepository
   }
 
-  async create (newReplyComment) {
-    const { threadId, commentId, owner, content } = newReplyComment
-    if (!await this._threadRepository.findOneById(threadId)) throw new NotFoundError('thread tidak ditemukan')
-    if (!await this._threadCommentRepository.findOneById(commentId)) throw new NotFoundError('comment tidak ditemukan')
-    if (!await this._userRepository.findOneById(owner)) throw new InvariantError('user tidak ditemukan')
+  async create (useCasePayload) {
+    const newReplyComment = new NewReplyComment(useCasePayload)
+    const { content, owner, commentId } = newReplyComment
 
     const currentDate = new Date().toISOString()
 
@@ -69,18 +61,16 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
     return new SavedComment(result.rows?.[0])
   }
 
-  async remove ({ id, commentId, owner }) {
+  async remove ({ id, owner }) {
     const reply = await this.findOneById(id)
-    const comment = await this._threadCommentRepository.findOneById(commentId)
 
-    if (!comment) throw new NotFoundError('comment tidak ditemukan')
-    if (!reply) throw new NotFoundError('comment tidak ditemukan')
+    if (!reply) throw new NotFoundError('balasan tidak ditemukan')
     if (reply.owner !== owner) throw new AuthorizationError('Forbidden')
 
     await this._pool.query({
       text: `DELETE FROM link_reply_comment
         WHERE (comment_id = $1) AND (comment_id = $2)`,
-      values: [commentId, id]
+      values: [reply.commentId, id]
     })
 
     const query = {

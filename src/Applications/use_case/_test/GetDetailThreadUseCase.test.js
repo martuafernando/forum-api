@@ -43,8 +43,8 @@ describe('GetDetailThreadUseCase', () => {
     }
     const registeredUser = {
       id: 'user-123',
-      username: 'dicoding',
-      fullname: 'Dicoding Indonesia'
+      username: 'username',
+      fullname: 'FullName'
     }
     const savedComment = []
 
@@ -129,8 +129,8 @@ describe('GetDetailThreadUseCase', () => {
     }
     const registeredUser = {
       id: 'user-123',
-      username: 'dicoding',
-      fullname: 'Dicoding Indonesia'
+      username: 'username',
+      fullname: 'FullName'
     }
     const savedComment = [
       {
@@ -248,8 +248,8 @@ describe('GetDetailThreadUseCase', () => {
     }
     const registeredUser = {
       id: 'user-123',
-      username: 'dicoding',
-      fullname: 'Dicoding Indonesia'
+      username: 'username',
+      fullname: 'FullName'
     }
     const savedComment = [
       {
