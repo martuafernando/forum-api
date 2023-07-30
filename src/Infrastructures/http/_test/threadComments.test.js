@@ -118,7 +118,6 @@ describe('/threads/{threadId}/comments endpoint', () => {
         payload: requestPayload
       })
 
-      console.log('testing::', response.payload)
       // Assert
       const responseJson = JSON.parse(response.payload)
       expect(response.statusCode).toEqual(201)

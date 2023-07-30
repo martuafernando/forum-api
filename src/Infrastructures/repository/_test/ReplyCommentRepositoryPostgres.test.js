@@ -44,9 +44,13 @@ describe('ReplyCommentRepositoryPostgres', () => {
       })
 
       // Action
-      await replyCommentRepositoryPostgres.create(useCasePayload)
+      const savedComment = await replyCommentRepositoryPostgres.create(useCasePayload)
 
       // Assert
+      expect(savedComment).toBeInstanceOf(SavedComment)
+      expect(savedComment.content).toEqual(useCasePayload.content)
+      expect(savedComment.owner).toEqual(useCasePayload.owner)
+
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.content).toEqual(useCasePayload.content)
@@ -74,6 +78,8 @@ describe('ReplyCommentRepositoryPostgres', () => {
       // Assert & Assert
       const comments = await replyCommentRepositoryPostgres.findAllFromComment('comment-123')
       expect(comments).toHaveLength(2)
+      expect(comments[0].id).toStrictEqual('comment-1')
+      expect(comments[1].id).toStrictEqual('comment-2')
     })
 
     it('should return empty array if there is no comment', async () => {
@@ -111,12 +117,12 @@ describe('ReplyCommentRepositoryPostgres', () => {
       const comments = await replyCommentRepositoryPostgres.findOneById('comment-123')
 
       // Assert
-      expect(comments).toBeInstanceOf(SavedComment)
-      expect(comments.id).toEqual(savedComment.id)
-      expect(comments.title).toEqual(savedComment.title)
-      expect(comments.content).toEqual(savedComment.content)
-      expect(comments.date).toEqual(savedComment.date)
-      expect(comments.owner).toEqual(savedComment.owner)
+      expect(comments.id).toStrictEqual(savedComment.id)
+      expect(comments.is_deleted).toStrictEqual(false)
+      expect(comments.title).toStrictEqual(savedComment.title)
+      expect(comments.content).toStrictEqual(savedComment.content)
+      expect(comments.date).toStrictEqual(savedComment.date)
+      expect(comments.owner).toStrictEqual(savedComment.owner)
     })
   })
 
@@ -181,6 +187,11 @@ describe('ReplyCommentRepositoryPostgres', () => {
       })
 
       // Assert
+      const replies = await CommentsTableTestHelper.findAllReplies('comment-123')
+      expect(replies).toHaveLength(1)
+      expect(replies[0].id).toStrictEqual('comment-234')
+      expect(replies[0].is_deleted).toStrictEqual(true)
+
       const comment = await CommentsTableTestHelper.findOneById('comment-234')
       expect(comment).toBeUndefined()
     })

@@ -39,6 +39,7 @@ describe('SavedComment entities', () => {
     // Assert
     expect(savedThreadComment).toBeInstanceOf(SavedComment)
     expect(savedThreadComment.id).toEqual(payload.id)
+    expect(savedThreadComment.date).toEqual(payload.date)
     expect(savedThreadComment.content).toEqual(payload.content)
     expect(savedThreadComment.owner).toEqual(payload.owner)
   })

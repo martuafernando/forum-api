@@ -77,7 +77,7 @@ class UserRepositoryPostgres extends UserRepository {
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('user tidak ditemukan')
-    return new RegisteredUser(result.rows[0])
+    return result.rows[0]
   }
 }
 

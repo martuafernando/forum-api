@@ -41,6 +41,7 @@ describe('SavedThread entities', () => {
     // Assert
     expect(savedThread).toBeInstanceOf(SavedThread)
     expect(savedThread.id).toEqual(payload.id)
+    expect(savedThread.body).toEqual(payload.body)
     expect(savedThread.title).toEqual(payload.title)
     expect(savedThread.date).toEqual(payload.date)
     expect(savedThread.owner).toEqual(payload.owner)

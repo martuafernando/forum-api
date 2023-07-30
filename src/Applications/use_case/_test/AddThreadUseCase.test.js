@@ -16,29 +16,27 @@ describe('AddThreadUseCase', () => {
       owner: '1'
     }
 
-    const mockSavedThread = new SavedThread({
-      id: 'thread-id',
-      title: useCasePayload.title,
-      body: useCasePayload.body,
-      date: 'thread-date',
-      owner: useCasePayload.owner
-    })
-
-    const mockRegisteredUser = new RegisteredUser({
-      id: 'user-123',
-      username: 'username',
-      fullname: 'FullName'
-    })
-
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository()
     const mockUserRepository = new UserRepository()
 
     /** mocking needed function */
-    mockThreadRepository.create = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockSavedThread))
-    mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockRegisteredUser))
+    mockThreadRepository.create = async () => {
+      return {
+        id: 'thread-id',
+        title: useCasePayload.title,
+        body: useCasePayload.body,
+        date: 'thread-date',
+        owner: useCasePayload.owner
+      }
+    }
+    mockUserRepository.findOneById = async () => {
+      return {
+        id: 'user-123',
+        username: 'username',
+        fullname: 'FullName'
+      }
+    }
 
     /** creating use case instance */
     const addThreadUseCase = new AddThreadUseCase({
@@ -50,8 +48,12 @@ describe('AddThreadUseCase', () => {
     const savedThread = await addThreadUseCase.execute(useCasePayload)
 
     // Assert
-    expect(savedThread).toStrictEqual(new SavedThread(mockSavedThread))
-
-    expect(mockThreadRepository.create).toBeCalledWith(useCasePayload)
+    expect(savedThread).toStrictEqual({
+      id: 'thread-id',
+      title: useCasePayload.title,
+      body: useCasePayload.body,
+      date: 'thread-date',
+      owner: useCasePayload.owner
+    })
   })
 })

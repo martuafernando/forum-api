@@ -36,6 +36,7 @@ describe('NewReplyComment entities', () => {
 
     // Assert
     expect(newReplyComment).toBeInstanceOf(NewReplyComment)
+    expect(newReplyComment.commentId).toEqual(payload.commentId)
     expect(newReplyComment.content).toEqual(payload.content)
     expect(newReplyComment.owner).toEqual(payload.owner)
     expect(newReplyComment.target).toEqual(payload.target)

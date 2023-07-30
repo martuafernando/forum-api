@@ -41,7 +41,7 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
   async findAllFromComment (commentId) {
     const query = {
       text: `SELECT comments.id, content, date, owner, is_deleted FROM link_reply_comment
-              INNER JOIN comments ON comments.id = comment_id
+              INNER JOIN comments ON comments.id = reply_id
               WHERE (comment_id = $1)
               ORDER BY date ASC`,
       values: [commentId]
@@ -58,18 +58,16 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('comment tidak ditemukan')
-    return new SavedComment(result.rows?.[0])
+    return result.rows?.[0]
   }
 
   async remove ({ id, owner }) {
     const reply = await this.findOneById(id)
-
-    if (!reply) throw new NotFoundError('balasan tidak ditemukan')
     if (reply.owner !== owner) throw new AuthorizationError('Forbidden')
 
     await this._pool.query({
       text: `DELETE FROM link_reply_comment
-        WHERE (comment_id = $1) AND (comment_id = $2)`,
+        WHERE (comment_id = $1) AND (reply_id = $2)`,
       values: [reply.commentId, id]
     })
 

@@ -145,6 +145,7 @@ describe('UserRepositoryPostgres', () => {
 
       // Assert
       expect(user).toBeDefined()
+      expect(user.id).toStrictEqual('user-321')
     })
   })
 })

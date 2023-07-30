@@ -38,9 +38,13 @@ describe('ThreadCommentRepositoryPostgres', () => {
       })
 
       // Action
-      await commentRepositoryPostgres.create(newThreadComment)
+      const savedComment = await commentRepositoryPostgres.create(newThreadComment)
 
       // Assert
+      expect(savedComment).toBeInstanceOf(SavedComment)
+      expect(savedComment.content).toEqual(newThreadComment.content)
+      expect(savedComment.owner).toEqual(newThreadComment.owner)
+
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.content).toEqual(newThreadComment.content)
@@ -58,6 +62,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
       // Assert & Assert
       const comments = await commentRepositoryPostgres.findAllFromThread('thread-123')
       expect(comments).toHaveLength(2)
+      expect(comments[0].id).toStrictEqual('comment-1')
+      expect(comments[1].id).toStrictEqual('comment-2')
     })
 
     it('should return empty array if there is no comment', async () => {
@@ -96,12 +102,12 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const comments = await commentRepositoryPostgres.findOneById('comment-123')
 
       // Assert
-      expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.id).toEqual(savedComment.id)
       expect(comments.title).toEqual(savedComment.title)
       expect(comments.content).toEqual(savedComment.content)
       expect(comments.date).toEqual(savedComment.date)
       expect(comments.owner).toEqual(savedComment.owner)
+      expect(comments.is_deleted).toEqual(false)
     })
   })
 
@@ -156,6 +162,11 @@ describe('ThreadCommentRepositoryPostgres', () => {
       await threadCommentRepositoryPostgres.remove(useCasePayload)
 
       // Assert
+      const threads = await CommentsTableTestHelper.findAll()
+      expect(threads).toHaveLength(1)
+      expect(threads[0].id).toStrictEqual('comment-123')
+      expect(threads[0].is_deleted).toStrictEqual(true)
+
       const comment = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comment).toBeUndefined()
     })

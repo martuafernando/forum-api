@@ -46,12 +46,11 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('thread tidak ditemukan')
-    return new SavedThread(result.rows?.[0])
+    return result.rows?.[0]
   }
 
   async remove (threadId, ownerId) {
     const thread = await this.findOneById(threadId)
-    if (!thread) throw new NotFoundError('Thread tidak ditemukan')
     if (thread.owner !== ownerId) throw new AuthorizationError('Forbidden')
 
     const query = {

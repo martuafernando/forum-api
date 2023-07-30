@@ -57,7 +57,7 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('comment tidak ditemukan')
-    return new SavedComment(result.rows?.[0])
+    return result.rows?.[0]
   }
 
   async remove ({ id, threadId, owner }) {
