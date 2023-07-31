@@ -32,14 +32,14 @@ class ThreadsHandler {
   }
 
   async deleteThreadCommentsHandler (request, h) {
-    const owner = await this._getCurrentUserFromAuthorizationToken(request)
+    const userId = await this._getCurrentUserFromAuthorizationToken(request)
 
     const { threadId, commentId } = request.params
     const deleteThreadCommentUseCase = this._container.getInstance(DeleteThreadCommentUseCase.name)
     await deleteThreadCommentUseCase.execute({
       id: commentId,
       threadId,
-      owner
+      userId
     })
 
     const response = h.response({
@@ -71,13 +71,13 @@ class ThreadsHandler {
   }
 
   async deleteRepliesCommentsHandler (request, h) {
-    const owner = await this._getCurrentUserFromAuthorizationToken(request)
+    const userId = await this._getCurrentUserFromAuthorizationToken(request)
     const { commentId, replyId: id } = request.params
     const deletereplyCommentUseCase = this._container.getInstance(DeleteReplyCommentUseCase.name)
     await deletereplyCommentUseCase.execute({
       id,
       commentId,
-      owner
+      userId
     })
 
     const response = h.response({

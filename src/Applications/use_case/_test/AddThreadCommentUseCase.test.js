@@ -5,6 +5,8 @@ const AddThreadCommentUseCase = require('../AddThreadCommentUseCase')
 const ThreadCommentRepository = require('../../../Domains/comments/ReplyCommentRepository')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const UserRepository = require('../../../Domains/users/UserRepository')
+const SavedThread = require('../../../Domains/threads/entities/SavedThread')
+const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
 
 describe('AddThreadCommentUseCase', () => {
   /**
@@ -22,7 +24,23 @@ describe('AddThreadCommentUseCase', () => {
       id: 'thread-123',
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
-      owner: useCasePayload.owner
+      owner: useCasePayload.owner,
+      is_deleted: false
+    })
+
+    const mockSavedThread = new SavedThread({
+      id: 'thread-123',
+      title: 'thread-title',
+      body: 'thread-body',
+      date: 'thread-date',
+      owner: 'thread-owner',
+      is_deleted: false
+    })
+    
+    const mockRegisteredUser = new RegisteredUser({
+      id: 'user-123',
+      username: 'username',
+      fullname: 'Full Name'
     })
 
     /** creating dependency of use case */
@@ -31,11 +49,11 @@ describe('AddThreadCommentUseCase', () => {
     const mockUserRepository = new UserRepository()
     /** mocking needed function */
     mockThreadRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockSavedThread)
     mockThreadCommentRepository.create = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockSavedComment))
+      .mockResolvedValue(mockSavedComment)
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockRegisteredUser)
 
     /** creating use case instance */
     const addThreadCommentUseCase = new AddThreadCommentUseCase({
@@ -48,13 +66,7 @@ describe('AddThreadCommentUseCase', () => {
     const savedComment = await addThreadCommentUseCase.execute(useCasePayload)
 
     // Assert
-    expect(savedComment).toStrictEqual(new SavedComment({
-      id: 'thread-123',
-      content: useCasePayload.content,
-      date: '2021-08-08T07:19:09.775Z',
-      threadId: useCasePayload.target,
-      owner: useCasePayload.owner
-    }))
+    expect(savedComment).toStrictEqual(mockSavedComment)
 
     expect(mockThreadCommentRepository.create)
       .toBeCalledWith(new NewThreadComment(useCasePayload))

@@ -6,6 +6,8 @@ const ReplyCommentRepository = require('../../../Domains/comments/ReplyCommentRe
 const ThreadCommentRepository = require('../../../Domains/comments/ThreadCommentRepository')
 const UserRepository = require('../../../Domains/users/UserRepository')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
+const SavedThread = require('../../../Domains/threads/entities/SavedThread')
+const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
 
 describe('AddReplyCommentUseCase', () => {
   /**
@@ -23,7 +25,23 @@ describe('AddReplyCommentUseCase', () => {
       id: 'comment-123',
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
-      owner: useCasePayload.owner
+      owner: useCasePayload.owner,
+      is_deleted: false
+    })
+
+    const mockSavedThread = new SavedThread({
+      id: 'thread-123',
+      title: 'thread-title',
+      body: 'thread-body',
+      date: 'thread-date',
+      owner: 'thread-owner',
+      is_deleted: false
+    })
+
+    const mockRegisteredUser = new RegisteredUser({
+      id: 'user-123',
+      username: 'username',
+      fullname: 'Full Name'
     })
 
     /** creating dependency of use case */
@@ -34,13 +52,13 @@ describe('AddReplyCommentUseCase', () => {
 
     /** mocking needed function */
     mockReplyCommentRepository.create = jest.fn()
-      .mockImplementation(() => Promise.resolve(mockSavedComment))
+      .mockResolvedValue(mockSavedComment)
     mockThreadCommentRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockSavedComment)
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockRegisteredUser)
     mockThreadRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockSavedThread)
 
     /** creating use case instance */
     const addReplyCommentUseCase = new AddReplyCommentUseCase({
@@ -59,7 +77,8 @@ describe('AddReplyCommentUseCase', () => {
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       commentId: useCasePayload.target,
-      owner: useCasePayload.owner
+      owner: useCasePayload.owner,
+      is_deleted: false
     }))
 
     expect(mockReplyCommentRepository.create)

@@ -48,13 +48,15 @@ describe('ReplyCommentRepositoryPostgres', () => {
 
       // Assert
       expect(savedComment).toBeInstanceOf(SavedComment)
-      expect(savedComment.content).toEqual(useCasePayload.content)
-      expect(savedComment.owner).toEqual(useCasePayload.owner)
+      expect(savedComment.content).toStrictEqual(useCasePayload.content)
+      expect(savedComment.owner).toStrictEqual(useCasePayload.owner)
+      expect(savedComment.is_deleted).toStrictEqual(false)
 
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.content).toEqual(useCasePayload.content)
       expect(comments.owner).toEqual(useCasePayload.owner)
+      expect(savedComment.is_deleted).toStrictEqual(false)
     })
   })
 
@@ -109,7 +111,8 @@ describe('ReplyCommentRepositoryPostgres', () => {
         id: 'comment-123',
         content: 'comment-content',
         owner: 'user-123',
-        date: '2021-08-08T07:19:09.775Z'
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
       })
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
 
@@ -123,6 +126,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       expect(comments.content).toStrictEqual(savedComment.content)
       expect(comments.date).toStrictEqual(savedComment.date)
       expect(comments.owner).toStrictEqual(savedComment.owner)
+      expect(comments.is_deleted).toStrictEqual(savedComment.is_deleted)
     })
   })
 
@@ -132,7 +136,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       const useCasePayload = {
         id: 'comment-123',
         commentId: 'comment-123',
-        owner: 'user-123'
+        userId: 'user-123'
       }
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
         pool
@@ -147,7 +151,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       await expect(replyCommentRepositoryPostgres.remove({
         id: useCasePayload.id,
         commentId: useCasePayload.commentId,
-        owner: 'user-xxx'
+        userId: 'user-xxx'
       }))
         .rejects
         .toThrowError(AuthorizationError)
@@ -183,7 +187,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       await replyCommentRepositoryPostgres.remove({
         id: 'comment-234',
         commentId: 'comment-123',
-        owner: 'user-123'
+        userId: 'user-123'
       })
 
       // Assert

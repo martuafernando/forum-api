@@ -18,7 +18,8 @@ describe('SavedThread entities', () => {
       title: 'title',
       body: 'body',
       date: 'date',
-      owner: 1234
+      owner: 1234,
+      is_deleted: false
     }
 
     // Action & Assert
@@ -32,7 +33,8 @@ describe('SavedThread entities', () => {
       title: 'title',
       body: 'body',
       date: 'date',
-      owner: 'owner'
+      owner: 'owner',
+      is_deleted: false
     }
 
     // Action
@@ -40,10 +42,11 @@ describe('SavedThread entities', () => {
 
     // Assert
     expect(savedThread).toBeInstanceOf(SavedThread)
-    expect(savedThread.id).toEqual(payload.id)
-    expect(savedThread.body).toEqual(payload.body)
-    expect(savedThread.title).toEqual(payload.title)
-    expect(savedThread.date).toEqual(payload.date)
-    expect(savedThread.owner).toEqual(payload.owner)
+    expect(savedThread.id).toStrictEqual(payload.id)
+    expect(savedThread.body).toStrictEqual(payload.body)
+    expect(savedThread.title).toStrictEqual(payload.title)
+    expect(savedThread.date).toStrictEqual(payload.date)
+    expect(savedThread.owner).toStrictEqual(payload.owner)
+    expect(savedThread.is_deleted).toStrictEqual(payload.is_deleted)
   })
 })

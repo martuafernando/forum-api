@@ -17,7 +17,8 @@ describe('SavedComment entities', () => {
       id: 'comment-id',
       content: 'comment content',
       date: '2021-08-08T07:19:09.775Z',
-      owner: 1234
+      owner: 1234,
+      is_deleted: false
     }
 
     // Action & Assert
@@ -30,7 +31,8 @@ describe('SavedComment entities', () => {
       id: 'comment-id',
       content: 'comment content',
       date: '2021-08-08T07:19:09.775Z',
-      owner: 'user-id'
+      owner: 'user-id',
+      is_deleted: false
     }
 
     // Action
@@ -38,9 +40,10 @@ describe('SavedComment entities', () => {
 
     // Assert
     expect(savedThreadComment).toBeInstanceOf(SavedComment)
-    expect(savedThreadComment.id).toEqual(payload.id)
-    expect(savedThreadComment.date).toEqual(payload.date)
-    expect(savedThreadComment.content).toEqual(payload.content)
-    expect(savedThreadComment.owner).toEqual(payload.owner)
+    expect(savedThreadComment.id).toStrictEqual(payload.id)
+    expect(savedThreadComment.date).toStrictEqual(payload.date)
+    expect(savedThreadComment.content).toStrictEqual(payload.content)
+    expect(savedThreadComment.owner).toStrictEqual(payload.owner)
+    expect(savedThreadComment.is_deleted).toStrictEqual(payload.is_deleted)
   })
 })

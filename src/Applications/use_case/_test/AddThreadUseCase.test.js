@@ -1,3 +1,4 @@
+const SavedComment = require('../../../Domains/comments/entities/SavedComment')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
@@ -13,30 +14,33 @@ describe('AddThreadUseCase', () => {
     const useCasePayload = {
       title: 'thread-title',
       body: 'thread-body',
-      owner: '1'
+      owner: 'user-123'
     }
+
+    const mockSavedThread = new SavedThread({
+      id: 'thread-123',
+      title: useCasePayload.title,
+      body: useCasePayload.body,
+      date: 'thread-date',
+      owner: useCasePayload.owner,
+      is_deleted: false
+    })
+
+    const mockRegisteredUser = new RegisteredUser({
+      id: 'user-123',
+      username: 'username',
+      fullname: 'Full Name'
+    })
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository()
     const mockUserRepository = new UserRepository()
 
     /** mocking needed function */
-    mockThreadRepository.create = async () => {
-      return {
-        id: 'thread-id',
-        title: useCasePayload.title,
-        body: useCasePayload.body,
-        date: 'thread-date',
-        owner: useCasePayload.owner
-      }
-    }
-    mockUserRepository.findOneById = async () => {
-      return {
-        id: 'user-123',
-        username: 'username',
-        fullname: 'FullName'
-      }
-    }
+    mockThreadRepository.create = jest.fn()
+      .mockResolvedValue(mockSavedThread)
+    mockUserRepository.findOneById = jest.fn()
+      .mockResolvedValue(mockRegisteredUser)
 
     /** creating use case instance */
     const addThreadUseCase = new AddThreadUseCase({
@@ -48,12 +52,13 @@ describe('AddThreadUseCase', () => {
     const savedThread = await addThreadUseCase.execute(useCasePayload)
 
     // Assert
-    expect(savedThread).toStrictEqual({
-      id: 'thread-id',
+    expect(savedThread).toStrictEqual(new SavedThread({
+      id: 'thread-123',
       title: useCasePayload.title,
       body: useCasePayload.body,
       date: 'thread-date',
-      owner: useCasePayload.owner
-    })
+      owner: useCasePayload.owner,
+      is_deleted: false
+    }))
   })
 })

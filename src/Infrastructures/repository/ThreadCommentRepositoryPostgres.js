@@ -22,7 +22,7 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
     const id = `comment-${this._idGenerator()}`
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner',
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner, is_deleted',
       values: [id, content, currentDate, owner]
     }
 
@@ -41,34 +41,29 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
     const query = {
       text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
               INNER JOIN comments ON comments.id = comment_id
-              WHERE (thread_id = $1)
+              WHERE thread_id = $1
               ORDER BY date ASC`,
       values: [threadId]
     }
     const result = await this._pool.query(query)
+    console.log('testing::', result.rows)
     return result?.rows
   }
 
   async findOneById (id) {
     const query = {
-      text: 'SELECT * FROM comments WHERE (id = $1) AND (is_deleted = false)',
+      text: 'SELECT * FROM comments WHERE (id = $1)',
       values: [id]
     }
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('comment tidak ditemukan')
-    return result.rows?.[0]
+    return new SavedComment(result.rows[0])
   }
 
-  async remove ({ id, threadId, owner }) {
+  async remove ({ id, threadId, userId }) {
     const comment = await this.findOneById(id)
-    if (comment.owner !== owner) throw new AuthorizationError('Forbidden')
-
-    await this._pool.query({
-      text: `DELETE FROM link_thread_comment
-        WHERE (thread_id = $1) AND (comment_id = $2)`,
-      values: [threadId, owner]
-    })
+    if (comment.owner !== userId) throw new AuthorizationError('Forbidden')
 
     const query = {
       text: `UPDATE comments

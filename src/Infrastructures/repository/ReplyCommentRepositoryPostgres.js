@@ -23,7 +23,7 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
     const id = `comment-${this._idGenerator()}`
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner',
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner, is_deleted',
       values: [id, content, currentDate, owner]
     }
 
@@ -52,24 +52,18 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
 
   async findOneById (id) {
     const query = {
-      text: 'SELECT * FROM comments WHERE (id = $1) AND (is_deleted = false)',
+      text: 'SELECT * FROM comments WHERE id = $1',
       values: [id]
     }
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('comment tidak ditemukan')
-    return result.rows?.[0]
+    return new SavedComment(result.rows?.[0])
   }
 
-  async remove ({ id, owner }) {
+  async remove ({ id, userId }) {
     const reply = await this.findOneById(id)
-    if (reply.owner !== owner) throw new AuthorizationError('Forbidden')
-
-    await this._pool.query({
-      text: `DELETE FROM link_reply_comment
-        WHERE (comment_id = $1) AND (reply_id = $2)`,
-      values: [reply.commentId, id]
-    })
+    if (reply.owner !== userId) throw new AuthorizationError('Forbidden')
 
     const query = {
       text: `UPDATE comments

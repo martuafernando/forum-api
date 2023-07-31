@@ -1,5 +1,6 @@
 const ThreadCommentRepository = require('../../../Domains/comments/ThreadCommentRepository')
 const UserRepository = require('../../../Domains/users/UserRepository')
+const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
 const DeleteThreadCommentUseCase = require('../DeleteThreadCommentUseCase')
 
 describe('DeleteThreadCommentUseCase', () => {
@@ -19,7 +20,7 @@ describe('DeleteThreadCommentUseCase', () => {
     const useCasePayload = {
       threadId: 'target-id',
       id: 123,
-      owner: 'user-123'
+      userId: 'user-123'
     }
     const deleteCommentUseCase = new DeleteThreadCommentUseCase({})
 
@@ -34,16 +35,22 @@ describe('DeleteThreadCommentUseCase', () => {
     const useCasePayload = {
       threadId: 'thread-123',
       id: 'comment-id',
-      owner: 'user123'
+      userId: 'user123'
     }
     const mockThreadCommentRepository = new ThreadCommentRepository()
     const mockUserRepository = new UserRepository()
+
+    const mockRegisteredUser = new RegisteredUser({
+      id: 'user-123',
+      username: 'username',
+      fullname: 'Full Name'
+    })
 
     // mocking
     mockThreadCommentRepository.remove = jest.fn()
       .mockImplementation(() => Promise.resolve())
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockRegisteredUser)
 
     const deleteCommentUseCase = new DeleteThreadCommentUseCase({
       threadCommentRepository: mockThreadCommentRepository,

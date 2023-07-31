@@ -93,7 +93,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
         id: 'comment-123',
         content: 'comment-content',
         owner: 'user-123',
-        date: '2021-08-08T07:19:09.775Z'
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
       })
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
 
@@ -102,6 +103,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const comments = await commentRepositoryPostgres.findOneById('comment-123')
 
       // Assert
+      expect(comments).toBeInstanceOf(SavedComment)
       expect(comments.id).toEqual(savedComment.id)
       expect(comments.title).toEqual(savedComment.title)
       expect(comments.content).toEqual(savedComment.content)
@@ -117,7 +119,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const useCasePayload = {
         id: 'comment-123',
         target: 'thread-xxx',
-        owner: 'user-123'
+        userId: 'user-123'
       }
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
 
@@ -132,7 +134,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const useCasePayload = {
         id: 'comment-123',
         threadId: 'thread-123',
-        owner: 'user-123'
+        userId: 'user-123'
       }
       const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
       await CommentsTableTestHelper.createThreadComment(useCasePayload)
@@ -141,7 +143,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       await expect(threadCommentRepositoryPostgres.remove({
         id: useCasePayload.id,
         threadId: useCasePayload.threadId,
-        owner: 'user-xxx'
+        userId: 'user-xxx'
       }))
         .rejects
         .toThrowError(AuthorizationError)
@@ -152,7 +154,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const useCasePayload = {
         id: 'comment-123',
         threadId: 'thread-123',
-        owner: 'user-123'
+        userId: 'user-123'
       }
 
       const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })

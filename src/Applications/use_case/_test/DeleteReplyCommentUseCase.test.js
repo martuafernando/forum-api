@@ -1,6 +1,8 @@
 const ReplyCommentRepository = require('../../../Domains/comments/ReplyCommentRepository')
 const ThreadCommentRepository = require('../../../Domains/comments/ThreadCommentRepository')
+const SavedComment = require('../../../Domains/comments/entities/SavedComment')
 const UserRepository = require('../../../Domains/users/UserRepository')
+const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
 const DeleteReplyCommentUseCase = require('../DeleteReplyCommentUseCase')
 
 describe('DeleteThreadCommentUseCase', () => {
@@ -20,7 +22,7 @@ describe('DeleteThreadCommentUseCase', () => {
     const useCasePayload = {
       commentId: 'comment-id',
       id: 123,
-      owner: 'user-123'
+      userId: 'user-123'
     }
     const deleteCommentUseCase = new DeleteReplyCommentUseCase({})
 
@@ -34,20 +36,35 @@ describe('DeleteThreadCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       commentId: 'comment-123',
+      content: 'comment-content',
       id: 'comment-id',
-      owner: 'user123'
+      userId: 'user-123'
     }
     const mockReplyCommentRepository = new ReplyCommentRepository()
     const mockUserRepository = new UserRepository()
     const mockthreadCommentRepository = new ThreadCommentRepository()
 
+    const mockRegisteredUser = new RegisteredUser({
+      id: useCasePayload.userId,
+      username: 'username',
+      fullname: 'Full Name'
+    })
+
+    const mockSavedComment = new SavedComment({
+      id: useCasePayload.id,
+      content: useCasePayload.content,
+      date: '2021-08-08T07:19:09.775Z',
+      owner: useCasePayload.userId,
+      is_deleted: false
+    })
+
     // mocking
     mockReplyCommentRepository.remove = jest.fn()
       .mockImplementation(() => Promise.resolve())
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockRegisteredUser)
     mockthreadCommentRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve())
+      .mockResolvedValue(mockSavedComment)
 
     const deleteCommentUseCase = new DeleteReplyCommentUseCase({
       replyCommentRepository: mockReplyCommentRepository,

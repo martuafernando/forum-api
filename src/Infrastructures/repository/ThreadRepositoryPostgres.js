@@ -20,7 +20,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const id = `thread-${this._idGenerator()}`
 
     const query = {
-      text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5) RETURNING id, title, body, date, owner',
+      text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5) RETURNING id, title, body, date, owner, is_deleted',
       values: [id, title, body, currentDate, owner]
     }
 
@@ -31,7 +31,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async findAll () {
     const query = {
-      text: 'SELECT * FROM threads WHERE is_deleted = false'
+      text: 'SELECT * FROM threads'
     }
     const result = await this._pool.query(query)
     return result?.rows
@@ -40,18 +40,18 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   async findOneById (id) {
     const query = {
       text: `SELECT * FROM threads
-            WHERE (id = $1) AND (is_deleted = false)`,
+            WHERE id = $1`,
       values: [id]
     }
 
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('thread tidak ditemukan')
-    return result.rows?.[0]
+    return new SavedThread(result.rows[0])
   }
 
-  async remove (threadId, ownerId) {
+  async remove (threadId, userId) {
     const thread = await this.findOneById(threadId)
-    if (thread.owner !== ownerId) throw new AuthorizationError('Forbidden')
+    if (thread.owner !== userId) throw new AuthorizationError('Forbidden')
 
     const query = {
       text: `UPDATE threads

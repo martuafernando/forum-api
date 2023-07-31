@@ -36,14 +36,15 @@ describe('GetDetailThreadUseCase', () => {
     const useCasePayload = {
       id: 'thread-123'
     }
-    const savedThread = new SavedThread({
+    const mockSavedThread = new SavedThread({
       id: 'thread-123',
       title: 'thread-123 title',
       body: 'thread-123 body',
       date: 'thread-123-date',
-      owner: 'user-123'
+      owner: 'user-123',
+      is_deleted: false
     })
-    const registeredUser = new RegisteredUser({
+    const mockRegisteredUser = new RegisteredUser({
       id: 'user-123',
       username: 'username',
       fullname: 'FullName'
@@ -56,11 +57,11 @@ describe('GetDetailThreadUseCase', () => {
 
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(savedThread))
+      .mockResolvedValue(mockSavedThread)
     mockThreadCommentRepository.findAllFromThread = async () => []
     mockReplyCommentRepository.findAllFromComment = async () => []
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(registeredUser))
+      .mockResolvedValue(mockRegisteredUser)
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -74,18 +75,18 @@ describe('GetDetailThreadUseCase', () => {
     // Assert
     expect(thread.comments).toHaveLength(0)
     expect(thread).toEqual({
-      id: savedThread.id,
-      title: savedThread.title,
-      body: savedThread.body,
-      date: savedThread.date,
-      username: registeredUser.username,
+      id: mockSavedThread.id,
+      title: mockSavedThread.title,
+      body: mockSavedThread.body,
+      date: mockSavedThread.date,
+      username: mockRegisteredUser.username,
       comments: []
     })
 
     expect(mockThreadRepository.findOneById)
       .toBeCalledWith(useCasePayload.id)
     expect(mockUserRepository.findOneById)
-      .toBeCalledWith(registeredUser.id)
+      .toBeCalledWith(mockRegisteredUser.id)
   })
 
   it('should return **komentar telah dihapus** when the comment was deleted', async () => {
@@ -93,14 +94,15 @@ describe('GetDetailThreadUseCase', () => {
     const useCasePayload = {
       id: 'thread-123'
     }
-    const savedThread =  new SavedThread({
+    const mockSavedThread = new SavedThread({
       id: 'thread-123',
       title: 'thread-123 title',
       body: 'thread-123 body',
       date: 'thread-123-date',
-      owner: 'user-123'
+      owner: 'user-123',
+      is_deleted: false
     })
-    const registeredUser = new RegisteredUser({
+    const mockRegisteredUser = new RegisteredUser({
       id: 'user-123',
       username: 'username',
       fullname: 'FullName'
@@ -139,10 +141,10 @@ describe('GetDetailThreadUseCase', () => {
 
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(savedThread))
+      .mockResolvedValue(mockSavedThread)
     mockThreadCommentRepository.findAllFromThread = jest.fn()
       .mockImplementation((threadId) => {
-        if (threadId === savedThread.id) return Promise.resolve(savedComment)
+        if (threadId === mockSavedThread.id) return Promise.resolve(savedComment)
         return Promise.resolve([])
       })
     mockReplyCommentRepository.findAllFromComment = jest.fn()
@@ -151,7 +153,7 @@ describe('GetDetailThreadUseCase', () => {
         return Promise.resolve([])
       })
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(registeredUser))
+      .mockResolvedValue(mockRegisteredUser)
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -168,30 +170,30 @@ describe('GetDetailThreadUseCase', () => {
     expect(thread.comments[0].replies[0].content).toStrictEqual('**balasan telah dihapus**')
     expect(thread.comments[0].replies[1].content).toStrictEqual(replyComment[1].content)
     expect(thread).toEqual({
-      id: savedThread.id,
-      title: savedThread.title,
-      body: savedThread.body,
-      date: savedThread.date,
-      username: registeredUser.username,
+      id: mockSavedThread.id,
+      title: mockSavedThread.title,
+      body: mockSavedThread.body,
+      date: mockSavedThread.date,
+      username: mockRegisteredUser.username,
       comments: savedComment.map((comment) => {
         return {
           id: comment.id,
           content: '**komentar telah dihapus**',
           date: comment.date,
-          username: registeredUser.username,
+          username: mockRegisteredUser.username,
           replies: [
             {
               id: replyComment[0].id,
               content: '**balasan telah dihapus**',
               date: replyComment[0].date,
-              username: registeredUser.username,
+              username: mockRegisteredUser.username,
               replies: []
             },
             {
               id: replyComment[1].id,
               content: replyComment[1].content,
               date: replyComment[1].date,
-              username: registeredUser.username,
+              username: mockRegisteredUser.username,
               replies: []
             }
           ]
@@ -204,7 +206,7 @@ describe('GetDetailThreadUseCase', () => {
     expect(mockThreadCommentRepository.findAllFromThread)
       .toBeCalledWith(useCasePayload.id)
     expect(mockUserRepository.findOneById)
-      .toBeCalledWith(registeredUser.id)
+      .toBeCalledWith(mockRegisteredUser.id)
   })
 
   it('should orchestrating the get detail thread action correctly', async () => {
@@ -258,7 +260,7 @@ describe('GetDetailThreadUseCase', () => {
 
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(savedThread))
+      .mockResolvedValue(savedThread)
     mockThreadCommentRepository.findAllFromThread = jest.fn()
       .mockImplementation((threadId) => {
         if (threadId === savedThread.id) return Promise.resolve(savedComment)
@@ -270,7 +272,7 @@ describe('GetDetailThreadUseCase', () => {
         return Promise.resolve([])
       })
     mockUserRepository.findOneById = jest.fn()
-      .mockImplementation(() => Promise.resolve(registeredUser))
+      .mockResolvedValue(registeredUser)
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
