@@ -36,7 +36,7 @@ describe('AddThreadCommentUseCase', () => {
       owner: 'thread-owner',
       is_deleted: false
     })
-    
+
     const mockRegisteredUser = new RegisteredUser({
       id: 'user-123',
       username: 'username',

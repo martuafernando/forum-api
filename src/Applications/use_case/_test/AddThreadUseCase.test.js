@@ -1,4 +1,3 @@
-const SavedComment = require('../../../Domains/comments/entities/SavedComment')
 const SavedThread = require('../../../Domains/threads/entities/SavedThread')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
