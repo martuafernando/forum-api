@@ -14,6 +14,10 @@ class ReplyCommentRepository {
   async remove (comment) {
     throw new Error('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  verifyOwner (comment, userId) {
+    throw new Error('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 module.exports = ReplyCommentRepository

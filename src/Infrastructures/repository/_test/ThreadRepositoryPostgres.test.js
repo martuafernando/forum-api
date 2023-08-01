@@ -41,15 +41,15 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Assert
       expect(savedThread).toBeInstanceOf(SavedThread)
-      expect(savedThread.title).toEqual(newThread.title)
-      expect(savedThread.body).toEqual(newThread.body)
-      expect(savedThread.owner).toEqual(newThread.owner)
+      expect(savedThread.title).toStrictEqual('thread-title')
+      expect(savedThread.body).toStrictEqual('thread-body')
+      expect(savedThread.owner).toStrictEqual('user-123')
 
       const threads = await ThreadsTableTestHelper.findOneById('thread-123')
       expect(threads).toBeInstanceOf(SavedThread)
-      expect(threads.title).toEqual(newThread.title)
-      expect(threads.body).toEqual(newThread.body)
-      expect(threads.owner).toEqual(newThread.owner)
+      expect(threads.title).toStrictEqual('thread-title')
+      expect(threads.body).toStrictEqual('thread-body')
+      expect(threads.owner).toStrictEqual('user-123')
     })
   })
 
@@ -102,26 +102,10 @@ describe('ThreadRepositoryPostgres', () => {
   describe('findOneById function', () => {
     it('should return NotFoundError when nothing thread with threadId found', async () => {
       // Arrange
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper
-      })
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres({ pool })
 
       // Action & Assert
       expect(threadRepositoryPostgres.findOneById('thread-1'))
-        .rejects
-        .toThrowError(NotFoundError)
-    })
-
-    it('should return thread when there is thread with threadId found', async () => {
-      // Arrange
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-        pool,
-        userRepository: UsersTableTestHelper
-      })
-
-      // Action && Assert
-      expect(threadRepositoryPostgres.findOneById('thread-123'))
         .rejects
         .toThrowError(NotFoundError)
     })
@@ -143,64 +127,76 @@ describe('ThreadRepositoryPostgres', () => {
       const thread = await threadRepositoryPostgres.findOneById('thread-123')
 
       // Assert
-      expect(thread.id).toEqual(savedThread.id)
-      expect(thread.title).toEqual(savedThread.title)
-      expect(thread.content).toEqual(savedThread.content)
-      expect(thread.date).toEqual(savedThread.date)
-      expect(thread.owner).toEqual(savedThread.owner)
-      expect(thread.is_deleted).toEqual(false)
+      expect(thread.id).toStrictEqual('thread-123')
+      expect(thread.title).toStrictEqual('thread-title')
+      expect(thread.body).toStrictEqual('thread-body')
+      expect(thread.date).toStrictEqual('2021-08-08T07:19:09.775Z')
+      expect(thread.owner).toStrictEqual('user-123')
+      expect(thread.is_deleted).toStrictEqual(false)
     })
   })
 
   describe('remove function', () => {
-    it('should throw InvariantError when thread not found', async () => {
+    it('should delete thread from database', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres({
         pool,
         userRepository: UsersTableTestHelper
       })
+      await ThreadsTableTestHelper.create({
+        id: 'thread-321',
+        owner: 'user-123'
+      })
+
+      // Action
+      await expect(threadRepositoryPostgres.remove('thread-321', 'user-123'))
+        .resolves
+        .toBeUndefined()
+
+      // Assert
+      const threads = await ThreadsTableTestHelper.findAll()
+      expect(threads).toHaveLength(1)
+      expect(threads[0].id).toStrictEqual('thread-321')
+      expect(threads[0].is_deleted).toStrictEqual(true)
+
+      const thread = await ThreadsTableTestHelper.findOneById('thread-321')
+      expect(thread).toBeUndefined()
+    })
+  })
+
+  describe('verifyyOwner function', () => {
+    it('Should return Authorization Error if the user is not the comment owner', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres({ pool })
+      const savedThread = new SavedThread({
+        id: 'thread-123',
+        owner: 'user-123',
+        title: 'thread-title',
+        body: 'thread-body',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
 
       // Action & Assert
-      expect(threadRepositoryPostgres.remove('thread-1', 'user-123'))
-        .rejects
-        .toThrowError(NotFoundError)
+      expect(() => threadRepositoryPostgres.verifyOwner(savedThread, 'user-xxx'))
+        .toThrowError(AuthorizationError)
     })
-  })
 
-  it('should throw AuthorizationError when user is not the owner', async () => {
-    // Arrange
-    const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-      pool,
-      userRepository: UsersTableTestHelper
+    it('Should return true if the user is the comment owner', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres({ pool })
+      const savedThread = new SavedThread({
+        id: 'thread-123',
+        owner: 'user-123',
+        title: 'thread-title',
+        body: 'thread-body',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyOwner(savedThread, 'user-123'))
+        .toStrictEqual(true)
     })
-    await ThreadsTableTestHelper.create({ id: 'thread-231', owner: 'user-123' })
-
-    // Action & Assert
-    await expect(threadRepositoryPostgres.remove('thread-231', 'user-xxx'))
-      .rejects
-      .toThrowError(AuthorizationError)
-  })
-
-  it('should delete thread from database', async () => {
-    // Arrange
-    const threadRepositoryPostgres = new ThreadRepositoryPostgres({
-      pool,
-      userRepository: UsersTableTestHelper
-    })
-    await ThreadsTableTestHelper.create({ id: 'thread-321', owner: 'user-123' })
-
-    // Action
-    await expect(threadRepositoryPostgres.remove('thread-321', 'user-123'))
-      .resolves
-      .toBeUndefined()
-
-    // Assert
-    const threads = await ThreadsTableTestHelper.findAll()
-    expect(threads).toHaveLength(1)
-    expect(threads[0].id).toStrictEqual('thread-321')
-    expect(threads[0].is_deleted).toStrictEqual(true)
-
-    const thread = await ThreadsTableTestHelper.findOneById('thread-321')
-    expect(thread).toBeUndefined()
   })
 })

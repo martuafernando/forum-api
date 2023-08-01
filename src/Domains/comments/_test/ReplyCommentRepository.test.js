@@ -10,5 +10,6 @@ describe('ReplyCommentsRepository interface', () => {
     await expect(commentRepository.findAllFromComment('')).rejects.toThrowError('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(commentRepository.findOneById('')).rejects.toThrowError('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(commentRepository.remove('')).rejects.toThrowError('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(() => commentRepository.verifyOwner('', '')).toThrowError('REPLY_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

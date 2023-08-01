@@ -18,11 +18,20 @@ describe('AddReplyCommentUseCase', () => {
     const useCasePayload = {
       content: 'comment content',
       commentId: 'comment-123',
-      owner: 'user-123'
+      owner: 'user-123',
+      threadId: 'thread-123'
     }
 
     const mockSavedComment = new SavedComment({
       id: 'comment-123',
+      content: useCasePayload.content,
+      date: '2021-08-08T07:19:09.775Z',
+      owner: useCasePayload.owner,
+      is_deleted: false
+    })
+
+    const mockReplyComment = new SavedComment({
+      id: 'comment-124',
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.owner,
@@ -54,7 +63,7 @@ describe('AddReplyCommentUseCase', () => {
     mockReplyCommentRepository.create = jest.fn()
       .mockResolvedValue(mockSavedComment)
     mockThreadCommentRepository.findOneById = jest.fn()
-      .mockResolvedValue(mockSavedComment)
+      .mockResolvedValue(mockReplyComment)
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(mockRegisteredUser)
     mockThreadRepository.findOneById = jest.fn()
@@ -83,5 +92,11 @@ describe('AddReplyCommentUseCase', () => {
 
     expect(mockReplyCommentRepository.create)
       .toBeCalledWith(new NewReplyComment(useCasePayload))
+    expect(mockThreadCommentRepository.findOneById)
+      .toBeCalledWith('comment-123')
+    expect(mockUserRepository.findOneById)
+      .toBeCalledWith('user-123')
+    expect(mockThreadRepository.findOneById)
+      .toBeCalledWith('thread-123')
   })
 })

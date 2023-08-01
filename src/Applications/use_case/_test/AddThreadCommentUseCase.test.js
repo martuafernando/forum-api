@@ -70,5 +70,9 @@ describe('AddThreadCommentUseCase', () => {
 
     expect(mockThreadCommentRepository.create)
       .toBeCalledWith(new NewThreadComment(useCasePayload))
+    expect(mockThreadRepository.findOneById)
+      .toBeCalledWith('thread-123')
+    expect(mockUserRepository.findOneById)
+      .toBeCalledWith('user-123')
   })
 })

@@ -49,10 +49,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return new SavedThread(result.rows[0])
   }
 
-  async remove (threadId, userId) {
-    const thread = await this.findOneById(threadId)
-    if (thread.owner !== userId) throw new AuthorizationError('Forbidden')
-
+  async remove (threadId) {
     const query = {
       text: `UPDATE threads
         SET is_deleted = true
@@ -60,6 +57,12 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId]
     }
     await this._pool.query(query)
+  }
+
+  verifyOwner (thread, userId) {
+    const savedThread = new SavedThread(thread)
+    if (savedThread.owner !== userId) throw new AuthorizationError('Forbidden')
+    return true
   }
 }
 

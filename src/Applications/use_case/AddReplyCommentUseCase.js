@@ -18,10 +18,7 @@ class AddReplyCommentUseCase {
     await this._userRepository.findOneById(newThreadComment.owner)
     await this._threadRepository.findOneById(useCasePayload.threadId)
     await this._threadCommentRepository.findOneById(newThreadComment.commentId)
-    return this._replyCommentRepository.create({
-      threadId: useCasePayload?.threadId,
-      ...newThreadComment
-    })
+    return this._replyCommentRepository.create(newThreadComment)
   }
 }
 

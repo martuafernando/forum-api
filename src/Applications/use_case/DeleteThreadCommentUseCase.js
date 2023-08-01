@@ -1,16 +1,21 @@
 class DeleteThreadCommentUseCase {
   constructor ({
+    threadRepository,
     threadCommentRepository,
     userRepository
   }) {
     this._threadCommentRepository = threadCommentRepository
+    this._threadRepository = threadRepository
     this._userRepository = userRepository
   }
 
   async execute (useCasePayload) {
     this._validatePayload(useCasePayload)
     await this._userRepository.findOneById(useCasePayload.userId)
-    return this._threadCommentRepository.remove(useCasePayload)
+    await this._threadRepository.findOneById(useCasePayload.threadId)
+    const savedComment = await this._threadCommentRepository.findOneById(useCasePayload.id)
+    await this._threadCommentRepository.verifyOwner(savedComment, useCasePayload.userId)
+    return this._threadCommentRepository.remove(useCasePayload.id)
   }
 
   _validatePayload (payload) {

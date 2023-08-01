@@ -42,13 +42,13 @@ describe('ThreadCommentRepositoryPostgres', () => {
 
       // Assert
       expect(savedComment).toBeInstanceOf(SavedComment)
-      expect(savedComment.content).toEqual(newThreadComment.content)
-      expect(savedComment.owner).toEqual(newThreadComment.owner)
+      expect(savedComment.content).toStrictEqual('comment-content')
+      expect(savedComment.owner).toStrictEqual('user-123')
 
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
-      expect(comments.content).toEqual(newThreadComment.content)
-      expect(comments.owner).toEqual(newThreadComment.owner)
+      expect(comments.content).toStrictEqual('comment-content')
+      expect(comments.owner).toStrictEqual('user-123')
     })
   })
 
@@ -56,14 +56,44 @@ describe('ThreadCommentRepositoryPostgres', () => {
     it('should get and return all saved comment correctly', async () => {
       // Arrange
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
-      await CommentsTableTestHelper.createThreadComment({ id: 'comment-1', owner: 'user-123' })
-      await CommentsTableTestHelper.createThreadComment({ id: 'comment-2', owner: 'user-123' })
+      await CommentsTableTestHelper.createThreadComment({
+        id: 'comment-123',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'thread-123',
+        owner: 'user-123',
+        is_deleted: false
+      })
+      await CommentsTableTestHelper.createThreadComment({
+        id: 'comment-124',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'thread-123',
+        owner: 'user-123',
+        is_deleted: false
+      })
 
       // Assert & Assert
       const comments = await commentRepositoryPostgres.findAllFromThread('thread-123')
       expect(comments).toHaveLength(2)
-      expect(comments[0].id).toStrictEqual('comment-1')
-      expect(comments[1].id).toStrictEqual('comment-2')
+      expect(comments[0].id).toStrictEqual('comment-123')
+      expect(comments[1].id).toStrictEqual('comment-124')
+      expect(comments).toEqual([
+        {
+          id: 'comment-123',
+          content: 'comment-content',
+          date: '2021-08-08T07:19:09.775Z',
+          owner: 'user-123',
+          is_deleted: false
+        },
+        {
+          id: 'comment-124',
+          content: 'comment-content',
+          date: '2021-08-08T07:19:09.775Z',
+          owner: 'user-123',
+          is_deleted: false
+        }
+      ])
     })
 
     it('should return empty array if there is no comment', async () => {
@@ -99,56 +129,20 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
 
       // action
-      await CommentsTableTestHelper.createThreadComment(SavedComment)
+      await CommentsTableTestHelper.createThreadComment(savedComment)
       const comments = await commentRepositoryPostgres.findOneById('comment-123')
 
       // Assert
       expect(comments).toBeInstanceOf(SavedComment)
-      expect(comments.id).toEqual(savedComment.id)
-      expect(comments.title).toEqual(savedComment.title)
-      expect(comments.content).toEqual(savedComment.content)
-      expect(comments.date).toEqual(savedComment.date)
-      expect(comments.owner).toEqual(savedComment.owner)
+      expect(comments.id).toEqual('comment-123')
+      expect(comments.content).toEqual('comment-content')
+      expect(comments.date).toEqual('2021-08-08T07:19:09.775Z')
+      expect(comments.owner).toEqual('user-123')
       expect(comments.is_deleted).toEqual(false)
     })
   })
 
   describe('remove function', () => {
-    it('should throw NotFoundError when target comment not found', async () => {
-      // Arrange
-      const useCasePayload = {
-        id: 'comment-123',
-        target: 'thread-xxx',
-        userId: 'user-123'
-      }
-      const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
-
-      // Action & Assert
-      expect(commentRepositoryPostgres.remove(useCasePayload))
-        .rejects
-        .toThrowError(NotFoundError)
-    })
-
-    it('should throw AuthorizationError when user is not the owner', async () => {
-      // Arrange
-      const useCasePayload = {
-        id: 'comment-123',
-        threadId: 'thread-123',
-        userId: 'user-123'
-      }
-      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
-      await CommentsTableTestHelper.createThreadComment(useCasePayload)
-
-      // Action & Assert
-      await expect(threadCommentRepositoryPostgres.remove({
-        id: useCasePayload.id,
-        threadId: useCasePayload.threadId,
-        userId: 'user-xxx'
-      }))
-        .rejects
-        .toThrowError(AuthorizationError)
-    })
-
     it('should delete comment from database', async () => {
       // Arrange
       const useCasePayload = {
@@ -161,7 +155,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.createThreadComment(useCasePayload)
 
       // Action
-      await threadCommentRepositoryPostgres.remove(useCasePayload)
+      await threadCommentRepositoryPostgres.remove(useCasePayload.id)
 
       // Assert
       const threads = await CommentsTableTestHelper.findAll()
@@ -171,6 +165,40 @@ describe('ThreadCommentRepositoryPostgres', () => {
 
       const comment = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comment).toBeUndefined()
+    })
+  })
+
+  describe('verifyyOwner function', () => {
+    it('Should return Authorization Error if the user is not the comment owner', async () => {
+      // Arrange
+      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      const savedThreadComment = new SavedComment({
+        id: 'comment-123',
+        owner: 'user-123',
+        content: 'comment content',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
+
+      // Action & Assert
+      await expect(() => threadCommentRepositoryPostgres.verifyOwner(savedThreadComment, 'user-xxx'))
+        .toThrowError(AuthorizationError)
+    })
+
+    it('Should return true if the user is the comment owner', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      const savedThreadComment = new SavedComment({
+        id: 'comment-123',
+        owner: 'user-123',
+        content: 'comment content',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyOwner(savedThreadComment, 'user-123'))
+        .toStrictEqual(true)
     })
   })
 })

@@ -11,5 +11,6 @@ describe('AuthenticationRepository interface', () => {
     await expect(threadRepository.findOneById('')).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(threadRepository.remove('')).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(threadRepository.getDetailThread('')).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(() => threadRepository.verifyOwner('', '')).toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

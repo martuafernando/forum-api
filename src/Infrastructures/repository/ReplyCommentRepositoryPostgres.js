@@ -52,7 +52,9 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
 
   async findOneById (id) {
     const query = {
-      text: 'SELECT * FROM comments WHERE id = $1',
+      text: `SELECT * FROM link_reply_comment
+            INNER JOIN comments ON comments.id = reply_id
+            WHERE reply_id = $1`,
       values: [id]
     }
 
@@ -61,10 +63,7 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
     return new SavedComment(result.rows?.[0])
   }
 
-  async remove ({ id, userId }) {
-    const reply = await this.findOneById(id)
-    if (reply.owner !== userId) throw new AuthorizationError('Forbidden')
-
+  async remove (id) {
     const query = {
       text: `UPDATE comments
         SET is_deleted = true
@@ -72,6 +71,12 @@ class ReplyCommentRepositoryPostgres extends ReplyCommentRepository {
       values: [id]
     }
     await this._pool.query(query)
+  }
+
+  verifyOwner (thread, userId) {
+    const savedComment = new SavedComment(thread)
+    if (savedComment.owner !== userId) throw new AuthorizationError('Forbidden')
+    return true
   }
 }
 

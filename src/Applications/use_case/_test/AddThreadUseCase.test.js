@@ -59,5 +59,10 @@ describe('AddThreadUseCase', () => {
       owner: useCasePayload.owner,
       is_deleted: false
     }))
+
+    expect(mockUserRepository.findOneById)
+      .toHaveBeenCalledWith('user-123')
+    expect(mockThreadRepository.create)
+      .toHaveBeenCalledWith(useCasePayload)
   })
 })

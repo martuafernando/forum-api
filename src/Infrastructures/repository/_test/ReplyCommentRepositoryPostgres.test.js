@@ -48,14 +48,14 @@ describe('ReplyCommentRepositoryPostgres', () => {
 
       // Assert
       expect(savedComment).toBeInstanceOf(SavedComment)
-      expect(savedComment.content).toStrictEqual(useCasePayload.content)
-      expect(savedComment.owner).toStrictEqual(useCasePayload.owner)
+      expect(savedComment.content).toStrictEqual('comment-content')
+      expect(savedComment.owner).toStrictEqual('user-123')
       expect(savedComment.is_deleted).toStrictEqual(false)
 
       const comments = await CommentsTableTestHelper.findOneById('comment-123')
       expect(comments).toBeInstanceOf(SavedComment)
-      expect(comments.content).toEqual(useCasePayload.content)
-      expect(comments.owner).toEqual(useCasePayload.owner)
+      expect(comments.content).toEqual('comment-content')
+      expect(comments.owner).toEqual('user-123')
       expect(savedComment.is_deleted).toStrictEqual(false)
     })
   })
@@ -67,21 +67,43 @@ describe('ReplyCommentRepositoryPostgres', () => {
         pool
       })
       await CommentsTableTestHelper.createReplyComment({
-        id: 'comment-1',
+        id: 'comment-223',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
         owner: 'user-123',
-        target: 'comment-123'
+        is_deleted: false
       })
       await CommentsTableTestHelper.createReplyComment({
-        id: 'comment-2',
+        id: 'comment-224',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
         owner: 'user-123',
-        target: 'comment-123'
+        is_deleted: false
       })
 
       // Assert & Assert
       const comments = await replyCommentRepositoryPostgres.findAllFromComment('comment-123')
       expect(comments).toHaveLength(2)
-      expect(comments[0].id).toStrictEqual('comment-1')
-      expect(comments[1].id).toStrictEqual('comment-2')
+      expect(comments[0].id).toStrictEqual('comment-223')
+      expect(comments[1].id).toStrictEqual('comment-224')
+      expect(comments).toEqual([
+        {
+          id: 'comment-223',
+          content: 'comment-content',
+          date: '2021-08-08T07:19:09.775Z',
+          owner: 'user-123',
+          is_deleted: false
+        },
+        {
+          id: 'comment-224',
+          content: 'comment-content',
+          date: '2021-08-08T07:19:09.775Z',
+          owner: 'user-123',
+          is_deleted: false
+        }
+      ])
     })
 
     it('should return empty array if there is no comment', async () => {
@@ -108,69 +130,28 @@ describe('ReplyCommentRepositoryPostgres', () => {
     it('should return comment when there is comment with id found', async () => {
       // Arrange
       const savedComment = new SavedComment({
-        id: 'comment-123',
+        id: 'comment-124',
         content: 'comment-content',
         owner: 'user-123',
         date: '2021-08-08T07:19:09.775Z',
         is_deleted: false
       })
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
-
+      await CommentsTableTestHelper.createReplyComment(savedComment)
       // action
-      const comments = await replyCommentRepositoryPostgres.findOneById('comment-123')
+      const comments = await replyCommentRepositoryPostgres.findOneById('comment-124')
 
       // Assert
-      expect(comments.id).toStrictEqual(savedComment.id)
+      expect(comments.id).toStrictEqual('comment-124')
       expect(comments.is_deleted).toStrictEqual(false)
-      expect(comments.title).toStrictEqual(savedComment.title)
-      expect(comments.content).toStrictEqual(savedComment.content)
-      expect(comments.date).toStrictEqual(savedComment.date)
-      expect(comments.owner).toStrictEqual(savedComment.owner)
-      expect(comments.is_deleted).toStrictEqual(savedComment.is_deleted)
+      expect(comments.content).toStrictEqual('comment-content')
+      expect(comments.date).toStrictEqual('2021-08-08T07:19:09.775Z')
+      expect(comments.owner).toStrictEqual('user-123')
+      expect(comments.is_deleted).toStrictEqual(false)
     })
   })
 
   describe('remove function', () => {
-    it('should throw AuthorizationError when user is not the owner', async () => {
-      // Arrange
-      const useCasePayload = {
-        id: 'comment-123',
-        commentId: 'comment-123',
-        userId: 'user-123'
-      }
-      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
-        pool
-      })
-      await CommentsTableTestHelper.createReplyComment({
-        id: 'comment-234',
-        target: 'comment-123',
-        owner: 'user-123'
-      })
-
-      // Action & Assert
-      await expect(replyCommentRepositoryPostgres.remove({
-        id: useCasePayload.id,
-        commentId: useCasePayload.commentId,
-        userId: 'user-xxx'
-      }))
-        .rejects
-        .toThrowError(AuthorizationError)
-    })
-
-    it('should throw NotFoundError when target comment not found', async () => {
-      // Arrange
-      const useCasePayload = {
-        id: 'comment-xxx',
-        owner: 'user-123'
-      }
-      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
-
-      // Action & Assert
-      expect(replyCommentRepositoryPostgres.remove(useCasePayload))
-        .rejects
-        .toThrowError(NotFoundError)
-    })
-
     it('should delete comment from database', async () => {
       // Arrange
 
@@ -184,11 +165,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
       })
 
       // Action
-      await replyCommentRepositoryPostgres.remove({
-        id: 'comment-234',
-        commentId: 'comment-123',
-        userId: 'user-123'
-      })
+      await replyCommentRepositoryPostgres.remove('comment-234')
 
       // Assert
       const replies = await CommentsTableTestHelper.findAllReplies('comment-123')
@@ -198,6 +175,40 @@ describe('ReplyCommentRepositoryPostgres', () => {
 
       const comment = await CommentsTableTestHelper.findOneById('comment-234')
       expect(comment).toBeUndefined()
+    })
+  })
+
+  describe('verifyyOwner function', () => {
+    it('Should return Authorization Error if the user is not the comment owner', async () => {
+      // Arrange
+      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      const savedReplyComment = new SavedComment({
+        id: 'comment-123',
+        owner: 'user-123',
+        content: 'comment content',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
+
+      // Action & Assert
+      expect(() => replyCommentRepositoryPostgres.verifyOwner(savedReplyComment, 'user-xxx'))
+        .toThrowError(AuthorizationError)
+    })
+
+    it('Should return true if the user is the comment owner', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      const savedReplyComment = new SavedComment({
+        id: 'comment-123',
+        owner: 'user-123',
+        content: 'comment content',
+        date: '2021-08-08T07:19:09.775Z',
+        is_deleted: false
+      })
+
+      // Action & Assert
+      expect(threadRepositoryPostgres.verifyOwner(savedReplyComment, 'user-123'))
+        .toStrictEqual(true)
     })
   })
 })

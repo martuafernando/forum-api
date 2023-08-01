@@ -1,8 +1,8 @@
 const SavedComment = require('../../Domains/comments/entities/SavedComment')
 const ThreadCommentRepository = require('../../Domains/comments/ThreadCommentRepository')
-const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
 const NewThreadComment = require('../../Domains/comments/entities/NewThreadComment')
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
 
 class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
   constructor ({
@@ -46,13 +46,14 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
       values: [threadId]
     }
     const result = await this._pool.query(query)
-    console.log('testing::', result.rows)
     return result?.rows
   }
 
   async findOneById (id) {
     const query = {
-      text: 'SELECT * FROM comments WHERE (id = $1)',
+      text: `SELECT * FROM link_thread_comment
+            INNER JOIN comments ON comments.id = comment_id
+            WHERE comment_id = $1`,
       values: [id]
     }
 
@@ -61,10 +62,7 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
     return new SavedComment(result.rows[0])
   }
 
-  async remove ({ id, threadId, userId }) {
-    const comment = await this.findOneById(id)
-    if (comment.owner !== userId) throw new AuthorizationError('Forbidden')
-
+  async remove (id) {
     const query = {
       text: `UPDATE comments
         SET is_deleted = true
@@ -72,6 +70,12 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
       values: [id]
     }
     await this._pool.query(query)
+  }
+
+  verifyOwner (thread, userId) {
+    const savedComment = new SavedComment(thread)
+    if (savedComment.owner !== userId) throw new AuthorizationError('Forbidden')
+    return true
   }
 }
 
