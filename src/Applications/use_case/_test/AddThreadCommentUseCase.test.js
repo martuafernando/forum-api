@@ -66,7 +66,13 @@ describe('AddThreadCommentUseCase', () => {
     const savedComment = await addThreadCommentUseCase.execute(useCasePayload)
 
     // Assert
-    expect(savedComment).toStrictEqual(mockSavedComment)
+    expect(savedComment).toStrictEqual(new SavedComment({
+      id: 'thread-123',
+      content: useCasePayload.content,
+      date: '2021-08-08T07:19:09.775Z',
+      owner: useCasePayload.owner,
+      is_deleted: false
+    }))
 
     expect(mockThreadCommentRepository.create)
       .toBeCalledWith(new NewThreadComment(useCasePayload))
