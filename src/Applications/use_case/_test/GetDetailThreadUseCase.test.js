@@ -52,21 +52,19 @@ describe('GetDetailThreadUseCase', () => {
 
     const mockThreadRepository = new ThreadRepository()
     const mockThreadCommentRepository = new ThreadCommentRepository()
-    const mockReplyCommentRepository = new ReplyCommentRepository()
     const mockUserRepository = new UserRepository()
 
     // Mocking
     mockThreadRepository.findOneById = jest.fn()
       .mockResolvedValue(mockSavedThread)
-    mockThreadCommentRepository.findAllFromThread = async () => []
-    mockReplyCommentRepository.findAllFromComment = async () => []
+    mockThreadCommentRepository.findAllFromThread = jest.fn()
+      .mockImplementation(() => [])
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(mockRegisteredUser)
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       threadCommentRepository: mockThreadCommentRepository,
-      replyCommentRepository: mockReplyCommentRepository,
       userRepository: mockUserRepository
     })
 
@@ -84,9 +82,11 @@ describe('GetDetailThreadUseCase', () => {
     })
 
     expect(mockThreadRepository.findOneById)
-      .toBeCalledWith(useCasePayload.id)
+      .toBeCalledWith('thread-123')
+    expect(mockThreadCommentRepository.findAllFromThread)
+      .toBeCalledWith('thread-123')
     expect(mockUserRepository.findOneById)
-      .toBeCalledWith(mockRegisteredUser.id)
+      .toBeCalledWith('user-123')
   })
 
   it('should return **komentar telah dihapus** when the comment was deleted', async () => {
@@ -207,6 +207,8 @@ describe('GetDetailThreadUseCase', () => {
       .toBeCalledWith(useCasePayload.id)
     expect(mockUserRepository.findOneById)
       .toBeCalledWith(mockRegisteredUser.id)
+    expect(mockReplyCommentRepository.findAllFromComment)
+      .toBeCalledWith('comment-123')
   })
 
   it('should orchestrating the get detail thread action correctly', async () => {
@@ -214,18 +216,19 @@ describe('GetDetailThreadUseCase', () => {
     const useCasePayload = {
       id: 'thread-123'
     }
-    const savedThread = {
+    const savedThread = new SavedThread({
       id: 'thread-123',
       title: 'thread-123 title',
       body: 'thread-123 body',
       date: 'thread-123-date',
-      owner: 'user-123'
-    }
-    const registeredUser = {
+      owner: 'user-123',
+      is_deleted: false
+    })
+    const registeredUser = new RegisteredUser({
       id: 'user-123',
       username: 'username',
       fullname: 'FullName'
-    }
+    })
     const savedComment = [
       {
         id: 'comment-123',
