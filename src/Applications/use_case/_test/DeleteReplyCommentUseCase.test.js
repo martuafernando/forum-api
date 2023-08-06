@@ -8,6 +8,33 @@ const RegisteredUser = require('../../../Domains/users/entities/RegisteredUser')
 const DeleteReplyCommentUseCase = require('../DeleteReplyCommentUseCase')
 
 describe('DeleteReplyCommentUseCase', () => {
+  it('should throw error if use case payload not contain required attribute', async () => {
+    // Arrange
+    const useCasePayload = {}
+    const deleteThreadCommentUseCase = new DeleteReplyCommentUseCase({})
+
+    // Action & Assert
+    await expect(deleteThreadCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('DELETE_REPLY_COMMENT_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY')
+  })
+
+  it('should throw error if payload not meet data type spesification', async () => {
+    // Arrange
+    const useCasePayload = {
+      commentId: 'comment-id',
+      id: 123,
+      userId: 'user-123',
+      threadId: 'thread-123'
+    }
+    const deleteCommentUseCase = new DeleteReplyCommentUseCase({})
+
+    // Action & Assert
+    await expect(deleteCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrowError('DELETE_REPLY_COMMENT_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION')
+  })
+
   it('should orchestrating the delete comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
@@ -83,6 +110,8 @@ describe('DeleteReplyCommentUseCase', () => {
       .toHaveBeenCalledWith('comment-123')
     expect(mockReplyCommentRepository.findOneById)
       .toHaveBeenCalledWith('comment-id')
+    expect(mockReplyCommentRepository.verifyOwner)
+      .toHaveBeenCalledWith(mockSavedReply, 'user-123')
     expect(mockReplyCommentRepository.remove)
       .toHaveBeenCalledWith(useCasePayload.id)
   })

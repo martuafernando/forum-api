@@ -130,4 +130,98 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       expect(responseJson.status).toEqual('fail')
     })
   })
+
+  describe('DELETE /threads/{threadId}/comments/{commentId}', () => {
+    beforeEach(async () => {
+      await CommentsTableTestHelper.createThreadComment({
+        id: 'comment-123',
+        owner: await UsersTableTestHelper.getIdByUsername('username')
+      })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        owner: await UsersTableTestHelper.getIdByUsername('username')
+      })
+    })
+
+    it('should response 200 when reply deleted', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      const accessToken = await UserApiTestHelper.getAccessTokenFromUser({})
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123/replies/comment-234',
+        headers: {
+          authorization: `Bearer ${accessToken}`
+        }
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(200)
+      expect(responseJson.status).toEqual('success')
+    })
+
+    it('should response 404 when comment not found', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      const accessToken = await UserApiTestHelper.getAccessTokenFromUser({})
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123/replies/comment-xxx',
+        headers: {
+          authorization: `Bearer ${accessToken}`
+        }
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(404)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual('comment tidak ditemukan')
+    })
+
+    it('should response 401 when there is no access token', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123/replies/comment-234'
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(401)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual('Missing authentication')
+    })
+
+    it('should response 403 when not the owner delete the comment', async () => {
+      // Arrange
+      const server = await createServer(container)
+      const accessToken = await UserApiTestHelper.getAccessTokenFromUser({ username: 'johndoe' })
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123/replies/comment-234',
+        headers: {
+          authorization: `Bearer ${accessToken}`
+        }
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(403)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual('Forbidden')
+    })
+  })
 })

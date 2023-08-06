@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "start:dev": "nodemon src/app.js",
-    "test": "jest --setupFiles dotenv/config -i",
+    "test": "jest --setupFiles dotenv/config -i --collect-coverage",
     "test:domain": "jest --setupFiles dotenv/config -i --testRegex \"src/Domains/.*\\.test\\.js$\"",
     "test:application": "jest --setupFiles dotenv/config -i --testRegex \"src/Applications/.*\\.test\\.js$\"",
     "test:infrastructure": "jest --setupFiles dotenv/config -i --testRegex \"src/Infrastructures/.*\\.test\\.js$\"",
