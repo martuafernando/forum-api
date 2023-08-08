@@ -46,13 +46,7 @@ describe('DeleteThreadCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository()
     // mocking
     mockThreadCommentRepository.remove = jest.fn()
-      .mockResolvedValue(new SavedComment({
-        id: 'comment-234',
-        content: 'comment-content',
-        date: '2021-08-08T07:19:09.775Z',
-        owner: 'user-123',
-        is_deleted: false
-      }))
+      .mockImplementation(() => Promise.resolve())
     mockThreadCommentRepository.findOneById = jest.fn()
       .mockResolvedValue(new SavedComment({
         id: 'comment-123',
