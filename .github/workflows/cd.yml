@@ -18,8 +18,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            source $NVM_DIR/nvm.sh
             cd ~/forumapi
             git pull origin main
-            npm install
-            npm run migrate up
-            pm2 restart forumapi
+            /home/c038dsx0743/.nvm/versions/node/v18.17.1/bin/npm install
+            /home/c038dsx0743/.nvm/versions/node/v18.17.1/bin/npm run migrate up
+            /usr/local/bin/pm2 restart forumapi
