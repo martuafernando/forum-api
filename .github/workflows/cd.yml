@@ -19,6 +19,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/forumapi
+            sudo ln -s /usr/bin/nodejs /usr/bin/node
             source $NVM_DIR/nvm.sh
             nvm use
             git pull origin main
