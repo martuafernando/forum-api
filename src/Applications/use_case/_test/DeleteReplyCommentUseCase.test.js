@@ -56,7 +56,7 @@ describe('DeleteReplyCommentUseCase', () => {
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.userId,
       is_deleted: false,
-      likeCount: 0,
+      likeCount: 0
     })
     const mockSavedReply = new SavedComment({
       id: 'comment-234',
@@ -64,7 +64,7 @@ describe('DeleteReplyCommentUseCase', () => {
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.userId,
       is_deleted: false,
-      likeCount: 0,
+      likeCount: 0
     })
     const mockSavedThread = new SavedThread({
       id: 'thread-123',

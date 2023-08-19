@@ -54,7 +54,7 @@ describe('DeleteThreadCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     const mockSavedThread = new SavedThread({
       id: 'thread-123',
@@ -96,7 +96,7 @@ describe('DeleteThreadCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }), 'user-123')
     expect(mockUserRepository.findOneById)
       .toHaveBeenCalledWith('user-123')

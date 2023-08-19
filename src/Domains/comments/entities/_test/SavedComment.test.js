@@ -19,7 +19,7 @@ describe('SavedComment entities', () => {
       date: '2021-08-08T07:19:09.775Z',
       owner: 1234,
       is_deleted: false,
-      likeCount: 0,
+      likeCount: 0
     }
 
     // Action & Assert
@@ -34,7 +34,7 @@ describe('SavedComment entities', () => {
       date: '2021-08-08T07:19:09.775Z',
       owner: 'user-id',
       is_deleted: false,
-      likeCount: 0,
+      likeCount: 0
     }
 
     // Action

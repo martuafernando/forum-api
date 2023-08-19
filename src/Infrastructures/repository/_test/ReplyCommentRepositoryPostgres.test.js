@@ -35,7 +35,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         content: 'comment-content',
         owner: 'user-123',
         threadId: 'thread-123',
-        commentId: 'comment-123',
+        commentId: 'comment-123'
       }
       const fakeIdGenerator = () => '234' // stub!
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
@@ -173,7 +173,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 1,
+        likeCount: 1
       }))
     })
   })
@@ -200,7 +200,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     })
   })

@@ -166,7 +166,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
         url: '/threads/thread-xxx/comments/comment-123/likes',
         headers: {
           authorization: `Bearer ${accessToken}`
-        },
+        }
       })
 
       // Assert
@@ -188,7 +188,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
         url: '/threads/thread-123/comments/comment-xxx/likes',
         headers: {
           authorization: `Bearer ${accessToken}`
-        },
+        }
       })
 
       // Assert

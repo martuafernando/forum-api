@@ -55,7 +55,7 @@ describe('LikeAndUnlikeReplyCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(new RegisteredUser({
@@ -79,7 +79,7 @@ describe('LikeAndUnlikeReplyCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockReplyCommentRepository.isUserLiked = jest.fn()
       .mockImplementation(() => Promise.resolve(false))
@@ -132,7 +132,7 @@ describe('LikeAndUnlikeReplyCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(new RegisteredUser({
@@ -156,7 +156,7 @@ describe('LikeAndUnlikeReplyCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockReplyCommentRepository.isUserLiked = jest.fn()
       .mockImplementation(() => Promise.resolve(true))

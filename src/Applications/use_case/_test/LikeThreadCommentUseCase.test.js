@@ -52,7 +52,7 @@ describe('LikeThreadCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(new RegisteredUser({
@@ -116,7 +116,7 @@ describe('LikeThreadCommentUseCase', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     mockUserRepository.findOneById = jest.fn()
       .mockResolvedValue(new RegisteredUser({

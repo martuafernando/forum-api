@@ -17,9 +17,9 @@ class LikeReplyCommentUseCase {
     await this._threadRepository.findOneById(useCasePayload.threadId)
     await this._threadCommentRepository.findOneById(useCasePayload.commentId)
     await this._replyCommentRepository.findOneById(useCasePayload.replyId)
-    
+
     const isLIked = await this._replyCommentRepository.isUserLiked(useCasePayload.userId, useCasePayload.replyId)
-    switch(isLIked) {
+    switch (isLIked) {
       case true:
         return await this._replyCommentRepository.unlikeComment(useCasePayload.userId, useCasePayload.replyId)
       case false:

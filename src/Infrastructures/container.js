@@ -36,7 +36,6 @@ const DeleteReplyCommentUseCase = require('../Applications/use_case/DeleteReplyC
 const GetDetailThreadUseCase = require('../Applications/use_case/GetDetailThreadUseCase')
 const AddReplyCommentUseCase = require('../Applications/use_case/AddReplyCommentUseCase')
 const LikeAndUnlikeThreadCommentUseCase = require('../Applications/use_case/LikeAndUnlikeThreadCommentUseCase')
-const LikeReplyCommentUseCase = require('../Applications/use_case/LikeAndUnlikeReplyCommentUseCase')
 
 // creating container
 const container = createContainer()

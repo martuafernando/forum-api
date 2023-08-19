@@ -16,7 +16,7 @@ class LikeAndUnlikeThreadCommentUseCase {
     await this._threadCommentRepository.findOneById(useCasePayload.commentId)
 
     const isLIked = await this._threadCommentRepository.isUserLiked(useCasePayload.userId, useCasePayload.commentId)
-    switch(isLIked) {
+    switch (isLIked) {
       case true:
         return await this._threadCommentRepository.unlikeComment(useCasePayload.userId, useCasePayload.commentId)
       case false:

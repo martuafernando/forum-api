@@ -127,7 +127,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
         owner: 'user-123',
         date: '2021-08-08T07:19:09.775Z',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       })
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
 
@@ -192,7 +192,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 1,
+        likeCount: 1
       }))
     })
   })
@@ -219,7 +219,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
         date: '2021-08-08T07:19:09.775Z',
         owner: 'user-123',
         is_deleted: false,
-        likeCount: 0,
+        likeCount: 0
       }))
     })
   })
