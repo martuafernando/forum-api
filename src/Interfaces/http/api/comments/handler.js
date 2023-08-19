@@ -3,7 +3,7 @@ const AddThreadCommentUseCase = require('../../../../Applications/use_case/AddTh
 const DeleteThreadCommentUseCase = require('../../../../Applications/use_case/DeleteThreadCommentUseCase')
 const DeleteReplyCommentUseCase = require('../../../../Applications/use_case/DeleteReplyCommentUseCase')
 const AuthenticationTokenManager = require('../../../../Applications/security/AuthenticationTokenManager')
-
+const LikeAndUnlikeThreadCommentUseCase = require('../../../../Applications/use_case/LikeAndUnlikeThreadCommentUseCase')
 class ThreadsHandler {
   constructor (container) {
     this._container = container
@@ -12,6 +12,7 @@ class ThreadsHandler {
     this.deleteThreadCommentsHandler = this.deleteThreadCommentsHandler.bind(this)
     this.postRepliesCommentsHandler = this.postRepliesCommentsHandler.bind(this)
     this.deleteRepliesCommentsHandler = this.deleteRepliesCommentsHandler.bind(this)
+    this.putThreadCommentLikesHandler = this.putThreadCommentLikesHandler.bind(this)
   }
 
   async postThreadCommentsHandler (request, h) {
@@ -28,6 +29,24 @@ class ThreadsHandler {
       }
     })
     response.code(201)
+    return response
+  }
+
+  async putThreadCommentLikesHandler (request, h) {
+    const userId = await this._getCurrentUserFromAuthorizationToken(request)
+
+    const { threadId, commentId } = request.params
+    const likeAndUnlikeThreadCommentUseCase = this._container.getInstance(LikeAndUnlikeThreadCommentUseCase.name)
+    await likeAndUnlikeThreadCommentUseCase.execute({
+      commentId,
+      threadId,
+      userId
+    })
+
+    const response = h.response({
+      status: 'success'
+    })
+    response.code(200)
     return response
   }
 

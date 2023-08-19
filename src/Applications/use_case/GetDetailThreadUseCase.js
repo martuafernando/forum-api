@@ -35,6 +35,7 @@ class GetDetailThreadUseCase {
           username: (await this._userRepository.findOneById(comment.owner)).username,
           date: comment.date,
           content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
+          likeCount: comment.likeCount,
           replies: await this.getReplies(comment.id)
         }
       }))
@@ -50,6 +51,7 @@ class GetDetailThreadUseCase {
           username: (await this._userRepository.findOneById(comment.owner)).username,
           date: comment.date,
           content: comment.is_deleted ? '**balasan telah dihapus**' : comment.content,
+          likeCount: comment.likeCount,
           replies: await this.getReplies(comment.id)
         }
       }))
