@@ -27,7 +27,8 @@ describe('AddReplyCommentUseCase', () => {
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.owner,
-      is_deleted: false
+      likeCount: 0,
+      is_deleted: false,
     })
 
     const mockReplyComment = new SavedComment({
@@ -35,7 +36,8 @@ describe('AddReplyCommentUseCase', () => {
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.owner,
-      is_deleted: false
+      likeCount: 0,
+      is_deleted: false,
     })
 
     const mockSavedThread = new SavedThread({
@@ -87,7 +89,8 @@ describe('AddReplyCommentUseCase', () => {
       date: '2021-08-08T07:19:09.775Z',
       commentId: useCasePayload.target,
       owner: useCasePayload.owner,
-      is_deleted: false
+      likeCount: 0,
+      is_deleted: false,
     }))
 
     expect(mockReplyCommentRepository.create)

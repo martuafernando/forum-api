@@ -124,7 +124,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
         content: 'comment-content',
         owner: 'user-123',
         date: '2021-08-08T07:19:09.775Z',
-        is_deleted: false
+        is_deleted: false,
+        likeCount: 0,
       })
       const commentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
 
@@ -168,6 +169,96 @@ describe('ThreadCommentRepositoryPostgres', () => {
     })
   })
 
+  describe('likeComment function', () => {
+    it('Should increase the likeCount if the commented was liked', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createThreadComment({
+        id: 'comment-123',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'thread-123',
+        owner: 'user-123'
+      })
+
+      // Action & Assert
+      await threadRepositoryPostgres.likeComment('user-123', 'comment-123')
+      const comment = await CommentsTableTestHelper.findOneById('comment-123')
+      expect(comment).toEqual(new SavedComment({
+        id: 'comment-123',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        owner: 'user-123',
+        is_deleted: false,
+        likeCount: 1,
+      }))
+    })
+  })
+
+  describe('unlikeComment function', () => {
+    it('Should increase the likeCount if the commented was liked', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createThreadComment({
+        id: 'comment-123',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'thread-123',
+        owner: 'user-123'
+      })
+      await CommentsTableTestHelper.setCommentLike('comment-123', '1')
+
+      // Action & Assert
+      await threadRepositoryPostgres.unlikeComment('user-123', 'comment-123')
+      const comment = await CommentsTableTestHelper.findOneById('comment-123')
+      expect(comment).toEqual(new SavedComment({
+        id: 'comment-123',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        owner: 'user-123',
+        is_deleted: false,
+        likeCount: 0,
+      }))
+    })
+  })
+
+  describe('isUserLiked function', () => {
+    it('Should return true if user was like the comment', async () => {
+      // Arrange
+      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'thread-123',
+        owner: 'user-123'
+      })
+      await CommentsTableTestHelper.setUserLikeComment('user-123', 'comment-234', '1')
+
+      // Action & Assert
+      expect(threadCommentRepositoryPostgres.isUserLiked('user-123', 'comment-234'))
+        .resolves
+        .toBe(true)
+    })
+
+    it('Should return false if user was not like the comment', async () => {
+      // Arrange
+      const replyCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
+        owner: 'user-123'
+      })
+
+      // Action & Assert
+      expect(replyCommentRepositoryPostgres.isUserLiked('user-123', 'comment-234'))
+        .resolves
+        .toBe(false)
+    })
+  })
+
   describe('verifyyOwner function', () => {
     it('Should return Authorization Error if the user is not the comment owner', async () => {
       // Arrange
@@ -177,6 +268,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
         owner: 'user-123',
         content: 'comment content',
         date: '2021-08-08T07:19:09.775Z',
+        likeCount: 0,
         is_deleted: false
       })
 
@@ -193,6 +285,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
         owner: 'user-123',
         content: 'comment content',
         date: '2021-08-08T07:19:09.775Z',
+        likeCount: 0,
         is_deleted: false
       })
 

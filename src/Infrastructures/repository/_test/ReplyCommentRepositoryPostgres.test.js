@@ -35,7 +35,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         content: 'comment-content',
         owner: 'user-123',
         threadId: 'thread-123',
-        commentId: 'comment-123'
+        commentId: 'comment-123',
       }
       const fakeIdGenerator = () => '234' // stub!
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({
@@ -134,6 +134,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         content: 'comment-content',
         owner: 'user-123',
         date: '2021-08-08T07:19:09.775Z',
+        likeCount: 0,
         is_deleted: false
       })
       const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
@@ -148,6 +149,96 @@ describe('ReplyCommentRepositoryPostgres', () => {
       expect(comments.date).toStrictEqual('2021-08-08T07:19:09.775Z')
       expect(comments.owner).toStrictEqual('user-123')
       expect(comments.is_deleted).toStrictEqual(false)
+    })
+  })
+
+  describe('likeComment function', () => {
+    it('Should increase the likeCount if the commented was liked', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
+        owner: 'user-123'
+      })
+
+      // Action & Assert
+      await threadRepositoryPostgres.likeComment('user-123', 'comment-234')
+      const comment = await CommentsTableTestHelper.findOneById('comment-234')
+      expect(comment).toEqual(new SavedComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        owner: 'user-123',
+        is_deleted: false,
+        likeCount: 1,
+      }))
+    })
+  })
+
+  describe('unlikeComment function', () => {
+    it('Should decrease the likeCount if the commented was liked', async () => {
+      // Arrange
+      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
+        owner: 'user-123'
+      })
+      await CommentsTableTestHelper.setCommentLike('comment-234', '1')
+
+      // Action & Assert
+      await replyCommentRepositoryPostgres.unlikeComment('user-123', 'comment-234')
+      const comment = await CommentsTableTestHelper.findOneById('comment-234')
+      expect(comment).toEqual(new SavedComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        owner: 'user-123',
+        is_deleted: false,
+        likeCount: 0,
+      }))
+    })
+  })
+
+  describe('isUserLiked function', () => {
+    it('Should return true if user was like the comment', async () => {
+      // Arrange
+      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
+        owner: 'user-123'
+      })
+      await CommentsTableTestHelper.setUserLikeComment('user-123', 'comment-234', '1')
+
+      // Action & Assert
+      expect(replyCommentRepositoryPostgres.isUserLiked('user-123', 'comment-234'))
+        .resolves
+        .toBe(true)
+    })
+
+    it('Should return false if user was not like the comment', async () => {
+      // Arrange
+      const replyCommentRepositoryPostgres = new ReplyCommentRepositoryPostgres({ pool })
+      await CommentsTableTestHelper.createReplyComment({
+        id: 'comment-234',
+        content: 'comment-content',
+        date: '2021-08-08T07:19:09.775Z',
+        target: 'comment-123',
+        owner: 'user-123'
+      })
+
+      // Action & Assert
+      expect(replyCommentRepositoryPostgres.isUserLiked('user-123', 'comment-234'))
+        .resolves
+        .toBe(false)
     })
   })
 
@@ -187,6 +278,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         owner: 'user-123',
         content: 'comment content',
         date: '2021-08-08T07:19:09.775Z',
+        likeCount: 0,
         is_deleted: false
       })
 
@@ -203,6 +295,7 @@ describe('ReplyCommentRepositoryPostgres', () => {
         owner: 'user-123',
         content: 'comment content',
         date: '2021-08-08T07:19:09.775Z',
+        likeCount: 0,
         is_deleted: false
       })
 

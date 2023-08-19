@@ -11,5 +11,8 @@ describe('ThreadCommentsRepository interface', () => {
     await expect(commentRepository.findOneById('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(commentRepository.remove('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(() => commentRepository.verifyOwner('', '')).toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.likeComment('', '')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.unlikeComment('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.isUserLiked('')).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

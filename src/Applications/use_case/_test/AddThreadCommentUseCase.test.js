@@ -25,7 +25,8 @@ describe('AddThreadCommentUseCase', () => {
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.owner,
-      is_deleted: false
+      is_deleted: false,
+      likeCount: 0,
     })
 
     const mockSavedThread = new SavedThread({
@@ -71,7 +72,8 @@ describe('AddThreadCommentUseCase', () => {
       content: useCasePayload.content,
       date: '2021-08-08T07:19:09.775Z',
       owner: useCasePayload.owner,
-      is_deleted: false
+      is_deleted: false,
+      likeCount: 0,
     }))
 
     expect(mockThreadCommentRepository.create)
