@@ -22,7 +22,7 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
     const id = `comment-${this._idGenerator()}`
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner, is_deleted',
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, date, owner, "likeCount", is_deleted',
       values: [id, content, currentDate, owner]
     }
 
@@ -39,7 +39,7 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
 
   async findAllFromThread (threadId) {
     const query = {
-      text: `SELECT comments.id, content, date, owner, is_deleted FROM link_thread_comment
+      text: `SELECT comments.id, "likeCount", content, date, owner, is_deleted FROM link_thread_comment
               INNER JOIN comments ON comments.id = comment_id
               WHERE thread_id = $1
               ORDER BY date ASC`,
@@ -60,6 +60,47 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
     const result = await this._pool.query(query)
     if (!result.rowCount) throw new NotFoundError('comment tidak ditemukan')
     return new SavedComment(result.rows[0])
+  }
+
+  async likeComment (userid, commentId) {
+    await this._pool.query({
+      text: `INSERT INTO link_user_like_comment
+            VALUES($1, $2)`,
+      values: [userid, commentId]
+    })
+
+    await this._pool.query({
+      text: `UPDATE comments
+        SET "likeCount" = "likeCount" + 1
+        WHERE id = $1`,
+      values: [commentId]
+    })
+  }
+
+  async unlikeComment (userid, commentId) {
+    await this._pool.query({
+      text: `DELETE FROM link_user_like_comment
+            WHERE user_id = $1 AND comment_id = $2`,
+      values: [userid, commentId]
+    })
+
+    await this._pool.query({
+      text: `UPDATE comments
+        SET "likeCount" = "likeCount" - 1
+        WHERE id = $1`,
+      values: [commentId]
+    })
+  }
+
+  async isUserLiked (userid, commentId) {
+    const result = await this._pool.query({
+      text: `SELECT * FROM link_user_like_comment
+            WHERE user_id = $1 AND comment_id = $2`,
+      values: [userid, commentId]
+    })
+
+    if (result.rows.length === 0) return false
+    return true
   }
 
   async remove (id) {

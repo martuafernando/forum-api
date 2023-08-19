@@ -21,6 +21,11 @@ exports.up = (pgm) => {
       references: 'users',
       onDelete: 'CASCADE'
     },
+    likeCount: {
+      type: 'INT',
+      notNull: true,
+      default: 0
+    },
     is_deleted: {
       type: 'BOOLEAN',
       notNull: true,

@@ -43,6 +43,23 @@ const CommentsTableTestHelper = {
     })
   },
 
+  async setCommentLike (commentId, totalLike) {
+    await pool.query({
+      text: `UPDATE comments
+        SET "likeCount" = $2
+        WHERE id = $1`,
+      values: [commentId, totalLike]
+    })
+  },
+
+  async setUserLikeComment (userId, commentId) {
+    await pool.query({
+      text: `INSERT INTO link_user_like_comment
+            VALUES($1, $2)`,
+      values: [userId, commentId]
+    })
+  },
+
   async findOneById (id) {
     const query = {
       text: 'SELECT * FROM comments WHERE (id = $1) AND (is_deleted = false)',
@@ -77,6 +94,7 @@ const CommentsTableTestHelper = {
   async cleanTable () {
     await pool.query('DELETE FROM link_thread_comment WHERE 1=1')
     await pool.query('DELETE FROM link_reply_comment WHERE 1=1')
+    await pool.query('DELETE FROM link_user_like_comment WHERE 1=1')
     await pool.query('DELETE FROM comments WHERE 1=1')
   }
 }

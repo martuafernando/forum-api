@@ -84,6 +84,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
           content: 'comment-content',
           date: '2021-08-08T07:19:09.775Z',
           owner: 'user-123',
+          likeCount: 0,
           is_deleted: false
         },
         {
@@ -91,6 +92,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
           content: 'comment-content',
           date: '2021-08-08T07:19:09.775Z',
           owner: 'user-123',
+          likeCount: 0,
           is_deleted: false
         }
       ])
